@@ -121,9 +121,11 @@ function bindQuantityCount() {
 
 function bindVariantOptions() {
   var productURL = $('.single-product').data('product-url');
-  
-  jQuery.getJSON(productURL + '.js', function(product) {
-    
+
+  fetch(productURL + '.js')
+  .then(response => response.json())
+  .then(product => {
+    // Your code that uses the product data goes here
     console.log(product);
 
     document.querySelectorAll('.sp-option input[type="radio"]').forEach(radio => {
@@ -151,9 +153,19 @@ function bindVariantOptions() {
 
         console.log(matchedVariant);
 
+        // change hidden input
         document.querySelector('#productId').value = matchedVariant.id;
 
+        // change url
+        var url = new URLParse(window.location.href, true);
+        url.query.variant = matchedVariant.id;
+        window.history.replaceState(null, null, url.toString());
+        // url.toString();
+        // console.log(url.toString());
       });
     });
+  })
+  .catch(error => {
+    console.error('Error fetching product data:', error);
   });
 }
