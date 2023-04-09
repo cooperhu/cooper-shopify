@@ -1,4 +1,4 @@
-<section class="single-product">
+<section class="single-product" data-product-url="{{ product.url }}">
     <div class="single-product__left">
         <div class="sp-gallery">
             {% for image in product.images %}
@@ -15,31 +15,41 @@
             <p class="sp-description">{{ product.description }}</p>
 
             {% form 'product', product %}
-                <select name="id">
-                    {% for variant in product.variants %}
-                        <option value="{{ variant.id }}">{{ variant.title }}</option>
+                
+                {% comment %} Hidden field for the product id we pass to cart {% endcomment %}
+                <input id="productId" type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}"/> 
+                
+                {% comment %} Only show variants that exist {% endcomment %}
+                {% unless product.has_only_default_variant %}
+                    {% for option in product.options_with_values %}
+                        <div class="sp-option">
+                            <fieldset>
+                                <legend>{{ option.name }}</legend>
+                                {% for value in option.values %}
+                                    <div>
+                                        <input type="radio" 
+                                            name="{{ option.name }}"
+                                            value="{{ value }}"
+                                            id="{{ option.name | handlize }}-{{ value | handlize }}"
+                                            {% if option.selected_value == value %} checked {% endif %}/>
+                                        <label for="{{ option.name | handlize }}-{{ value | handlize }}">{{ value }}</label>
+                                    </div>
+                                {% endfor %}
+                            </fieldset>
+                        </div>
                     {% endfor %}
-                </select>
+                {% endunless %}
 
+                {% comment %} Quantity {% endcomment %}
                 <div class="sp-option">
-                  <button type="button" id="sub" class="sub">-</button>
-                  <input id="quantity" name="quantity" value="1" class="sp-quantity" min="1" max="100" />
-                  <button type="button" id="add" class="add">+</button>
+                  <button class="quantity__btn js-sub" type="button">-</button>
+                  <input  class="quantity__input" id="quantity" name="quantity" value="1" min="1" max="5" />
+                  <button class="quantity__btn js-add" type="button">+</button>
                 </div>
 
                 <button type="submit">Add to Cart</button>
                 
-                <!--
-                {% if product.variant.available %}
-                    
-                {% else %}
-                    <button type="submit" disabled>Sold Out</button>
-                {% endif %}
-                -->
-
-                <!-- <button type="submit">Add to Cart</button> -->
             {% endform %}
         </div>
     </div>
 </section>
-            

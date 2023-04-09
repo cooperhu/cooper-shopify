@@ -49,9 +49,23 @@ function initCartDrawer() {
 
 
 
-/* ***********************
- * Page/View Specific Functions
- * *********************** */
+/* ********************************
+ * Pagewide Init Functions
+ * ******************************** */
+function initSingleProduct() {
+  console.log('on product page');
+  // controls for quantity sliders
+  bindQuantityCount();
+  bindVariantOptions();
+}
+
+function initCartPage() {
+  console.log('on cart page');
+  // controls for quantity sliders
+  bindQuantityCount();
+  bindVariantOptions();
+}
+
 function initContactPage() {
   console.log('on contact page');
 }
@@ -83,35 +97,63 @@ function initCollectionPage() {
   });
 }
 
-function initSingleProduct() {
-    // controls for quantity sliders
-  bindQuantityCount();
-}
-
-function initCartPage() {
-  // controls for quantity sliders
-  bindQuantityCount();
-}
-
+/* ********************************
+ * Single Purpose Functions
+ * ******************************** */
 function bindQuantityCount() {
-    const addButtons = document.querySelectorAll('.add');
+    console.log('bindQuantityCount');
+    const addButtons = document.querySelectorAll('.js-add');
     addButtons.forEach(function (addButton) {
       addButton.addEventListener('click', function () {
-        const th = this.closest('.sp-option').querySelector('.sp-quantity');
+        const th = this.closest('.sp-option').querySelector('.quantity__input');
         th.value = parseInt(th.value) + 1;
       });
     });
 
-    const subButtons = document.querySelectorAll('.sub');
+    const subButtons = document.querySelectorAll('.js-sub');
     subButtons.forEach(function (subButton) {
       subButton.addEventListener('click', function () {
-        const th = this.closest('.sp-option').querySelector('.sp-quantity');
+        const th = this.closest('.sp-option').querySelector('.quantity__input');
         if (parseInt(th.value) > 1) th.value = parseInt(th.value) - 1;
       });
     });
+}
 
-    $('.sub').click(function () {
-      var th = $(this).closest('.sp-option').find('.sp-quantity');     
-            if (th.val() > 1) th.val(+th.val() - 1);
+function bindVariantOptions() {
+  var productURL = $('.single-product').data('product-url');
+  
+  jQuery.getJSON(productURL + '.js', function(product) {
+    
+    console.log(product);
+
+    document.querySelectorAll('.sp-option input[type="radio"]').forEach(radio => {
+      radio.addEventListener('change', () => {
+        // find selected options
+        var selectedOptions = [];
+
+        document.querySelectorAll('.sp-option input[type="radio"]:checked').forEach(radio => {
+          selectedOptions.push(radio.value)
+        });
+
+        // finding matched variant
+        var matchedVariant = product.variants.find(variant => {
+          var pass = true;
+
+          for (var i = 0; i < selectedOptions.length; i++) {
+            if (selectedOptions.indexOf(variant.options[i]) === -1) {
+              pass = false;
+              break;
+            }
+          }
+
+          return pass;
+        })
+
+        console.log(matchedVariant);
+
+        document.querySelector('#productId').value = matchedVariant.id;
+
+      });
     });
+  });
 }

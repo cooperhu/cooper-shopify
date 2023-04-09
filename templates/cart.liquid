@@ -11,7 +11,17 @@
                 </a>
                 <h2><a href="{{ item.url }}">{{ item.title }}</a></h2>
                 <p>{{ item.final_line_price | money }}</p>
+                <!--
                 <input name="updates[]" value="{{ item.quantity }}"/>
+                -->
+                
+                {% comment %} Quantity {% endcomment %}
+                <div class="sp-option">
+                  <button class="quantity__btn js-sub" type="button">-</button>
+                  <input  class="quantity__input" id="quantity" name="updates[]" value="{{ item.quantity }}" min="1" max="100" />
+                  <button class="quantity__btn js-add" type="button">+</button>
+                </div>
+
                 <a href="{{ item.url_to_remove }}">Remove from Cart</a>
             </div>
         {% endfor %}
