@@ -1,4 +1,4 @@
-<section class="single-product" data-product-url="{{ product.url }}">
+<section class="single-product" data-producturl="{{ product.url }}">
     <div class="single-product__left">
         <div class="sp-gallery">
             {% for image in product.images %}
@@ -11,7 +11,18 @@
     <div class="single-product__right">
         <div class="sp-wrapper">
             <h1 class="sp-title">{{ product.title }}</h1>
-            <p class="sp-price">{{ product.price | money }}</p>
+            
+            <div class="sp-price-wrapper">
+                <p class="sp-compare-price {% unless product.selected_or_first_available_variant.compare_at_price > product.selected_or_first_available_variant.price %} hidden {% endunless %}">
+                    {{ product.selected_or_first_available_variant.compare_at_price | money }}
+                </p><p class="sp-price" data-moneyformat="{{ shop.money_format }}">{{ product.selected_or_first_available_variant.price | money }}</p>
+            </div>
+
+            {% comment %}
+                {% if product.selected_or_first_available_variant.compare_at_price %}
+                {% endif %}
+            {% endcomment %}
+            
             <p class="sp-description">{{ product.description }}</p>
 
             {% form 'product', product %}
