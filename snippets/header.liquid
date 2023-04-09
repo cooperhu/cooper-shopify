@@ -1,3 +1,9 @@
+{% if settings.show_banner %}
+    <div class="sitewide-banner">
+        {{ settings.banner_text }}
+    </div>
+{% endif %}
+
 <header class="site-header">
     
     <div class="site-logo-wrapper">

@@ -14,15 +14,15 @@
         "settings": [
           {
             "type": "checkbox",
-            "id": "show_site_banner",
+            "id": "show_banner",
             "label": "Show Sitewide Banner",
             "default": false
           },
           {
-            "type": "image_picker",
-            "id": "favicon",
-            "label": "Favicon image",
-            "info": "Will be scaled down to 32 x 32px"
+            "type": "inline_richtext",
+            "id": "banner_text",
+            "default": "This is the sitewide banner",
+            "label": "Inline rich text"
           }
         ]
     },
