@@ -1,11 +1,25 @@
 <section class="single-product" data-producturl="{{ product.url }}">
     <div class="single-product__left">
         <div class="sp-gallery">
-            {% for image in product.images %}
-                <div class="sp-gallery-item">
-                    <img src="{{ image | image_url: master }}"/>
-                </div>
-            {% endfor %}
+            <script>
+                console.log('hi', {{ product.selected_or_first_available_variant | json }}); 
+            </script>
+
+            {% if product.selected_or_first_available_variant.featured_image %}
+                {% assign featured = product.selected_or_first_available_variant.featured_image %}
+                <img id="productImage" src="{{ featured | image_url: master }}"/>
+            {% else %}
+                {% assign featured = product.featured_image %}
+                <img id="productImage" src="{{ featured | image_url: master }}"/>
+            {% endif %}
+
+            <ul class="sp-gallery-thumbs">
+                {% for image in product.images %}
+                    <li class="{% if image == featured %}active{% endif %}">
+                        <img src="{{ image | image_url: master }}"/>
+                    </li>
+                {% endfor %}
+            </ul>
         </div>
     </div>
     <div class="single-product__right">
@@ -54,7 +68,7 @@
                 {% comment %} Quantity {% endcomment %}
                 <div class="sp-option">
                   <button class="quantity__btn js-sub" type="button">-</button>
-                  <input  class="quantity__input" id="quantity" name="quantity" value="1" min="1" max="5" />
+                  <input  class="quantity__input" type="number" id="quantity" name="quantity" value="1" min="1" max="10" />
                   <button class="quantity__btn js-add" type="button">+</button>
                 </div>
 

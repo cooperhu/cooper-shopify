@@ -23,7 +23,7 @@ function initNavigation() {
       // markers: true,
     });
   }
-}
+};
 
 function initCartDrawer() {
   // Opens Cart
@@ -39,38 +39,35 @@ function initCartDrawer() {
   });
 
   // Removes item from cart drawer list (WIP)
-}
-
-
+};
 
 // Allows WP Links to operate normally
 // document.querySelectorAll("#wpadminbar a").forEach(item=>item.setAttribute('data-barba-prevent','self'));
 
-
-
-
 /* ********************************
  * Pagewide Init Functions
  * ******************************** */
-function initSingleProduct() {
+var initSingleProduct = function() {
   console.log('on product page');
   // controls for quantity sliders
   bindQuantityCount();
   bindVariantOptions();
-}
 
-function initCartPage() {
+  bindGalleryControls();
+};
+
+var initCartPage = function() {
   console.log('on cart page');
   // controls for quantity sliders
   bindQuantityCount();
   bindVariantOptions();
-}
+};
 
-function initContactPage() {
+var initContactPage = function() {
   console.log('on contact page');
-}
+};
 
-function initCollectionPage() {
+var initCollectionPage = function() {
   console.log('on collection page');
 
   Shopify.queryParams = {};
@@ -95,12 +92,12 @@ function initCollectionPage() {
     Shopify.queryParams.sort_by = value;
     location.search = new URLSearchParams(Shopify.queryParams).toString();
   });
-}
+};
 
 /* ********************************
  * Single Purpose Functions
  * ******************************** */
-function bindQuantityCount() {
+var bindQuantityCount = function() {
     console.log('bindQuantityCount');
     const addButtons = document.querySelectorAll('.js-add');
     addButtons.forEach(function (addButton) {
@@ -117,9 +114,9 @@ function bindQuantityCount() {
         if (parseInt(th.value) > 1) th.value = parseInt(th.value) - 1;
       });
     });
-}
+};
 
-function bindVariantOptions() {
+var bindVariantOptions = function() {
   var productURL = document.querySelector('.single-product').dataset.producturl;
 
   fetch(productURL + '.js')
@@ -160,23 +157,41 @@ function bindVariantOptions() {
         url.query.variant = matchedVariant.id;
         window.history.replaceState(null, null, url.toString());
 
-        // update price
+        // change price
         var moneyFormat = document.querySelector('.sp-price').dataset.moneyformat;
         document.querySelector('.sp-price').textContent = formatMoney(matchedVariant.price, moneyFormat);
         document.querySelector('.sp-compare-price').textContent = formatMoney(matchedVariant.compare_at_price, moneyFormat);
 
-        // toggle class
+        // toggle price classes
         matchedVariant.compare_at_price > matchedVariant.price ? 
           document.querySelector('.sp-compare-price').classList.remove('hidden') : 
           document.querySelector('.sp-compare-price').classList.add('hidden')
 
+        // change image
+        if (matchedVariant.featured_image) {
+          document.querySelector('#productImage').setAttribute('src', matchedVariant.featured_image.src);
+          document.querySelector('.sp-gallery-thumbs li.active').classList.remove('active');
+          document.querySelectorAll('.sp-gallery-thumbs li')[matchedVariant.featured_image.position - 1].classList.add('active');
+        }
       });
     });
   })
   .catch(error => {
     console.error('Error fetching product data:', error);
   });
-}
+};
+
+var bindGalleryControls = function() {
+  document.querySelectorAll('.sp-gallery-thumbs li').forEach(li => {
+    li.addEventListener('click', () => {
+      document.querySelector('.sp-gallery-thumbs li.active').classList.remove('active');
+      li.classList.add('active');
+
+      document.querySelector('#productImage').src = li.querySelector('img').getAttribute('src');
+    });
+  });
+};
+
 
 
 /* ********************************
