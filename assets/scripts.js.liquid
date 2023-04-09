@@ -1,105 +1,129 @@
-console.log('Hello World');
-
-// Init functions
+// Sitewide Init Functions
 initCartDrawer();
+initNavigation();
 
-barba.init({
-    preventRunning: true,
-    transitions: [{
-        name: 'default-transition',
-        once(data) {
-            console.log('once', data.next.namespace);
-            gsap.to(data.next.container, 0.65, {
-                opacity: 1,
-                ease: "power2.inOut"
-            });
-        },
-        leave(data) {
-            // Remove active nav class
-            document.querySelectorAll('.site-navigation a').forEach(function(element) {
-                element.classList.remove('active');
-            });
-            // Animate out old view
-            gsap.to(data.current.container, 0.45, {
-                opacity: 0,
-                ease: "power2.inOut"
-            });
-        },
-        enter(data) {
-            // console.log('enter', data.next.url.path);
-
-            // Add active nav class
-            document.querySelectorAll('.site-navigation a').forEach(function(element) {
-              if (element.getAttribute('href') === data.next.url.path) {
-                element.classList.add('active');
-              }
-            });
-
-            // Fade in new content
-            let page = data.next.namespace;
-            
-            gsap.set(data.next.container, {
-                opacity: 0,
-            });
-
-            gsap.to(data.next.container, 0.45, {
-                opacity: 1,
-                ease: "power2.inOut"
-            });
-        },
-    }],
-    views: [{
-        namespace: 'pagecontact',
-        beforeEnter() {
-          initContactPage();
-        }
-    },
-    {
-        namespace: 'collection',
-        beforeEnter() {
-          initCollectionPage();
-        }
-    },
-    {
-        namespace: 'product',
-        beforeEnter() {
-          initSingleProduct();
-        }
-    },
-    {
-        namespace: 'product',
-        beforeEnter() {
-          initSingleProduct();
-        }
-    }]
+var scroll = new LocomotiveScroll({
+  // el: document.querySelector('[data-scroll-container]'),
+  // smooth: true
 });
+
+// Barba SAP Init
+/*
+barba.init({
+  preventRunning: true,
+  transitions: [{
+      name: 'default-transition',
+      once(data) {
+          console.log('once', data.next.namespace);
+          gsap.to(data.next.container, 0.65, {
+              opacity: 1,
+              ease: "power2.inOut"
+          });
+      },
+      leave(data) {
+          // Remove active nav class
+          document.querySelectorAll('.site-navigation a').forEach(function(element) {
+              element.classList.remove('active');
+          });
+          // Animate out old view
+          gsap.to(data.current.container, 0.45, {
+              opacity: 0,
+              ease: "power2.inOut"
+          });
+      },
+      enter(data) {
+          // console.log('enter', data.next.url.path);
+
+          // Add active nav class
+          document.querySelectorAll('.site-navigation a').forEach(function(element) {
+            if (element.getAttribute('href') === data.next.url.path) {
+              element.classList.add('active');
+            }
+          });
+
+          // Fade in new content
+          let page = data.next.namespace;
+          
+          gsap.set(data.next.container, {
+              opacity: 0,
+          });
+
+          gsap.to(data.next.container, 0.45, {
+              opacity: 1,
+              ease: "power2.inOut"
+          });
+      },
+  }],
+  views: [{
+      namespace: 'pagecontact',
+      beforeEnter() {
+        initContactPage();
+      }
+  },
+  {
+      namespace: 'collection',
+      beforeEnter() {
+        initCollectionPage();
+      }
+  },
+  {
+      namespace: 'product',
+      beforeEnter() {
+        initSingleProduct();
+      }
+  },
+  {
+      namespace: 'product',
+      beforeEnter() {
+        initSingleProduct();
+      }
+  }]
+});
+*/
+/* ***********************
+ * Sitewide Functions
+ * *********************** */
 
 // Allows WP Links to operate normally
 // document.querySelectorAll("#wpadminbar a").forEach(item=>item.setAttribute('data-barba-prevent','self'));
 
-function initCartDrawer() {
-    $('.js-open-cart').on('click', function(e) {
-        e.preventDefault();
-        gsap.to('.cart-drawer', 0.35, {autoAlpha: 1, opacity: 1});
+function initNavigation() {
+  // Enable sticky nav
+  if (document.querySelector('.site-header').classList.contains('is-sticky')) {
+    ScrollTrigger.create({
+      trigger: ".site-header",
+      pin: ".site-header",
+      start: "top",
+      end: 99999,
+      // markers: true,
     });
-
-    $('.js-close-cart').on('click', function(e) {
-        e.preventDefault();
-        gsap.to('.cart-drawer', 0.35, {autoAlpha: 0, opacity: 0});
-    });
-
-    $('.js-remove-cart-drawer-item').on('click', function(e) {
-        $(this).parent().remove();
-    });
+  }
 }
 
+function initCartDrawer() {
+  // Opens Cart
+  $('.js-open-cart').on('click', function(e) {
+    e.preventDefault();
+    gsap.to('.cart-drawer', 0.35, {autoAlpha: 1, opacity: 1});
+  });
+
+  // Closes Cart
+  $('.js-close-cart').on('click', function(e) {
+    e.preventDefault();
+    gsap.to('.cart-drawer', 0.35, {autoAlpha: 0, opacity: 0});
+  });
+
+  // Removes item from cart drawer list (WIP)
+  $('.js-remove-cart-drawer-item').on('click', function(e) {
+    $(this).parent().remove();
+  });
+}
+
+/* ***********************
+ * Page/View Specific Functions
+ * *********************** */
 function initContactPage() {
     console.log('on contact page');
-
-    document.querySelectorAll('.sub');
-
-
-    $('.sub')
 }
 
 function initCollectionPage() {
@@ -129,7 +153,6 @@ function initCollectionPage() {
     });
 }
 
-
 function initSingleProduct() {
     // controls for quantity sliders
     bindQuantityCount();
@@ -139,7 +162,6 @@ function initCartPage() {
     // controls for quantity sliders
     bindQuantityCount();
 }
-
 
 function bindQuantityCount() {
     const addButtons = document.querySelectorAll('.add');
@@ -163,13 +185,3 @@ function bindQuantityCount() {
             if (th.val() > 1) th.val(+th.val() - 1);
     });
 }
-
-
-/* 
-var url=window.location.href,
-    separator = (url.indexOf("?")===-1)?"?":"&",
-    newParam=separator + "ts=true";
-    newUrl=url.replace(newParam,"");
-    newUrl+=newParam;
-    window.location.href =newUrl;
-    */

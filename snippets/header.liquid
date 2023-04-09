@@ -4,9 +4,10 @@
     </div>
 {% endif %}
 
-<header class="site-header">
+<header class="site-header {% if settings.header_behavior == 'sticky' %} is-sticky {% endif %}">
     
     <div class="site-logo-wrapper">
+        
         {% comment %}<h1>{{ shop.name }}</h1>{% endcomment %}
         
         {%- if settings.logo != blank -%}

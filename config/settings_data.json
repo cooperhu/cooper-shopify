@@ -2,7 +2,12 @@
   "current": {
     "logo": "shopify:\/\/shop_images\/logo.svg",
     "favicon": "shopify:\/\/shop_images\/favicon.png",
+    "show_banner": true,
+    "banner_text": "✨Sitewide banner message✨",
+    "banner_bg_color": "#41fc65",
+    "banner_text_color": "#191919",
     "show_search": true,
+    "inline": "Sitewide sale: <strong>EASTER10<\/strong> at checkout.",
     "content_for_index": [
 
     ]

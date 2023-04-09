@@ -5,7 +5,16 @@
     --black: #191919;
     --white: #ffffff;
     --red: #c41e3a;
+
+    --site-bg: {{ settings.site_bg_color }};
+    --site-text: {{ settings.site_text_color }};
+
+    --banner-bg: {{ settings.banner_bg_color }};
+    --banner-text: {{ settings.banner_text_color }};
+
+    --border-color: {{ settings.site_text_color }};
 }
+
 /* Sets init fade in */
 html.js main {
     opacity: 1;
@@ -37,7 +46,8 @@ body {
     min-height: 100vh;
     min-height: 100svh;
 
-    color: var(--black);
+    color: var(--site-text);
+    background: var(--site-bg);
 
     /* background-color: {{ settings.bg }};
     color: {{ settings.text_color }}; */
@@ -62,7 +72,7 @@ img {
  * Typography 
  * ************************** */
 a {
-    color: var(--black);
+    color: var(--site-text);
     text-decoration: none;
 }
 
@@ -74,22 +84,32 @@ a:hover {
  * Header 
  * ************************** */
 .sitewide-banner {
+    position: relative;
+    z-index: 1000;
+    
     padding: 0.35rem var(--padding-side-sm);
 
     text-align: center;
-    color: var(--white);
-    background: var(--black);
+    color: var(--banner-text);
+    background: var(--banner-bg);
+    border-bottom: 1px solid var(--border-color);
 }
 
 .sitewide-banner a {
-    color: var(--white);
+    color: var(--banner-text);
 }
 
 .site-header {
     position: relative;
-    background: #fff;
+    z-index: 1000;
+
+    width: 100%;
+
     padding: 0.5rem var(--padding-side-sm);
-    border-bottom: 1px solid var(--black);
+
+    background: var(--site-bg);
+
+    border-bottom: 1px solid var(--border-color);
 }
 
 @media screen and (min-width: 700px) {
@@ -100,10 +120,6 @@ a:hover {
 
 .site-title {
     margin: 0;
-}
-
-.site-title a {
-    color: var(--black);
 }
 
 /* Nav ********************* */
@@ -158,11 +174,9 @@ a:hover {
     width: 100%;
     max-width: 320px;
 
-    
+    background: var(--site-bg);
 
-    background: var(--white);
-
-    border: 1px solid var(--black);
+    border: 1px solid var(--border-color);
 }
 
 @media screen and (min-width: 700px) {
@@ -178,7 +192,7 @@ a:hover {
 }
 
 .cart-drawer__header {
-    border-bottom: 1px solid var(--black);
+    border-bottom: 1px solid var(--border-color);
 }
 
 .cart-drawer__header h4 {
@@ -217,7 +231,7 @@ a:hover {
     width: 25px;
     aspect-ratio: 1;
 
-    color: var(--black);
+    color: var(--site-text);
     text-align: center;
 }
 
