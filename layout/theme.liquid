@@ -32,7 +32,7 @@ shopify starter theme by connor hubeny - connorhubeny.com -->
     {% render 'meta-tags' %}
     
     {{ content_for_header }}
-    
+
     {{ 'locomotive-scroll.min.css' | asset_url | stylesheet_tag }}
     {{ 'slick.css' | asset_url | stylesheet_tag }}
     {{ 'main.css' | asset_url | stylesheet_tag }}
@@ -47,9 +47,12 @@ shopify starter theme by connor hubeny - connorhubeny.com -->
 
     {% render 'cart-drawer' %}
 
-    <main class="site-main" data-barba="wrapper" data-scroll-container>
-        <div data-barba="container" data-barba-namespace="{{ template.name }}{{ template.suffix }}">
-            {{ content_for_layout }}
+    <main class="site-main" data-barba="wrapper">
+        <div id="{% if request.path == '/' %}index{% else %}{{ request.path | remove_first: '/' | replace: '/', '--' }}{% endif %}"
+             class="site-content" 
+             data-barba="container"
+             data-barba-namespace="{{ template.name }}{{ template.suffix }}">
+                {{ content_for_layout }}
         </div>
     </main>
 
@@ -60,6 +63,15 @@ shopify starter theme by connor hubeny - connorhubeny.com -->
     {{ 'slick.min.js' | asset_url | script_tag }}
     {{ 'gsap.min.js' | asset_url | script_tag }}
     {{ 'ScrollTrigger.min.js' | asset_url | script_tag }}
-    {{ 'scripts.js' | asset_url | script_tag }}
+    {{ 'core.js' | asset_url | script_tag }}
+    
+    {% if request.design_mode %}
+        {{ 'editor.js' | asset_url | script_tag }}
+    {% else %}
+        {{ 'scripts.js' | asset_url | script_tag }}
+    {% endif %}
+    
+
+
 </body>
 </html>
