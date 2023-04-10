@@ -19,7 +19,9 @@
       {% endfor %}
     </div>
 
-    {{ paginate | default_pagination }}
+    <div class="product-pagination">
+      {{ paginate | default_pagination }}
+    </div>
 {% endpaginate %}
 
 {% comment %}

@@ -147,7 +147,7 @@ var bindVariantOptions = function() {
           return pass;
         })
 
-        // console.log(matchedVariant);
+        console.log('new product', matchedVariant);
 
         // change hidden input
         document.querySelector('#productId').value = matchedVariant.id;
@@ -172,6 +172,31 @@ var bindVariantOptions = function() {
           document.querySelector('#productImage').setAttribute('src', matchedVariant.featured_image.src);
           document.querySelector('.sp-gallery-thumbs li.active').classList.remove('active');
           document.querySelectorAll('.sp-gallery-thumbs li')[matchedVariant.featured_image.position - 1].classList.add('active');
+        }
+
+        // change button
+        var add = document.querySelector('#addToCart');
+
+        if (matchedVariant.available) {
+          // set add to cart button text
+          add.textContent = 'Add to Cart';
+
+          // enable form fields 
+          document.querySelectorAll('.js-disable-field').forEach(input => {
+            input.disabled = false;
+          });
+
+          document.querySelectorAll('.sp-option input[type="radio"]:checked').forEach(radio => {
+          selectedOptions.push(radio.value)
+        });
+        } else {
+          // set add to cart button text
+          add.textContent = 'Out of Stock';
+
+          // disable form fields
+          document.querySelectorAll('.js-disable-field').forEach(input => {
+            input.disabled = true;
+          });
         }
       });
     });

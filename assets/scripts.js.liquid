@@ -23,6 +23,8 @@ barba.init({
       },
       enter(data) {
           // console.log('enter', data.next.url.path);
+          
+          window.scrollTo(0, 0);
 
           // Add active nav class
           document.querySelectorAll('.site-navigation a').forEach(function(element) {

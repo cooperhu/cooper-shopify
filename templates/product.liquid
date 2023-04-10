@@ -7,10 +7,20 @@
 
             {% if product.selected_or_first_available_variant.featured_image %}
                 {% assign featured = product.selected_or_first_available_variant.featured_image %}
-                <img id="productImage" src="{{ featured | image_url: master }}"/>
+                <img id="productImage"
+                     src="{{ featured | image_url: master }}" 
+                     width="{{ featured.width }}" 
+                     height="{{ featured.height }}" 
+                     alt="{{ featured.alt }}"
+                     loading="lazy" />
             {% else %}
                 {% assign featured = product.featured_image %}
-                <img id="productImage" src="{{ featured | image_url: master }}"/>
+                <img id="productImage"
+                     src="{{ featured | image_url: master }}" 
+                     width="{{ featured.width }}" 
+                     height="{{ featured.height }}" 
+                     alt="{{ featured.alt }}"
+                     loading="lazy" />
             {% endif %}
 
             <ul class="sp-gallery-thumbs">
@@ -65,14 +75,27 @@
                     {% endfor %}
                 {% endunless %}
 
+                {% comment %} Disable the fields if the product is sold-out {% endcomment %}
+                {% if product.selected_or_first_available_variant.available %} 
+                    {% assign disable_field = ''; %}
+                {% else %}
+                    {% assign disable_field = 'disabled'; %}
+                {% endif %}
+
                 {% comment %} Quantity {% endcomment %}
                 <div class="sp-option">
-                  <button class="quantity__btn js-sub" type="button">-</button>
-                  <input  class="quantity__input" type="number" id="quantity" name="quantity" value="1" min="1" max="10" />
-                  <button class="quantity__btn js-add" type="button">+</button>
+                  <button {{ disable_field }} class="quantity__btn js-sub js-disable-field" type="button">-</button>
+                  <input  {{ disable_field }} class="quantity__input js-disable-field" type="number" id="quantity" name="quantity" value="1" min="1" max="10" />
+                  <button {{ disable_field }} class="quantity__btn js-add js-disable-field" type="button">+</button>
                 </div>
 
-                <button type="submit">Add to Cart</button>
+                <button id="addToCart" {{ disable_field }} type="submit" class="js-disable-field">
+                    {% if product.selected_or_first_available_variant.available %}
+                        Add to cart
+                    {% else %}
+                        Sold Out
+                    {% endif %}
+                </button>
                 
             {% endform %}
         </div>
