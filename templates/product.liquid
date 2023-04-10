@@ -89,13 +89,18 @@
                   <button {{ disable_field }} class="quantity__btn js-add js-disable-field" type="button">+</button>
                 </div>
 
-                <button id="addToCart" {{ disable_field }} type="submit" class="js-disable-field">
+                <button id="addToCartBtn" {{ disable_field }} type="submit" class="js-disable-field">
                     {% if product.selected_or_first_available_variant.available %}
-                        Add to cart
+                        Add to Cart
                     {% else %}
                         Sold Out
                     {% endif %}
                 </button>
+
+                {% if settings.show_buy_now %}
+                    <button id="buyItNowBtn" type="submit" 
+                            class="js-disable-field {% unless product.selected_or_first_available_variant.available %} hidden {% endunless %}">Buy it Now</button>
+                {% endif %}
                 
             {% endform %}
         </div>

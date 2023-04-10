@@ -78,7 +78,19 @@
             {
                 "type": "checkbox",
                 "id": "show_search",
-                "label": "Show Search Form",
+                "label": "Header: Show Search Form",
+                "default": true
+            },
+            {
+                "type": "checkbox",
+                "id": "show_buy_now",
+                "label": "Product: Show Buy Now Buttons",
+                "default": true
+            },
+            {
+                "type": "checkbox",
+                "id": "enable_order_notes",
+                "label": "Cart: Enable Order Notes",
                 "default": true
             }
         ]

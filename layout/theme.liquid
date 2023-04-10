@@ -57,20 +57,28 @@ shopify starter theme by connor hubeny - connorhubeny.com -->
     </main>
 
     {{ 'modernizr-custom.js' | asset_url | script_tag }}
-    {{ 'locomotive-scroll.min.js' | asset_url | script_tag }}
-    {{ 'jquery.min.js' | asset_url | script_tag }}
+    {{ 'axios.min.js'  | asset_url | script_tag }}
     {{ 'url-parse.min.js' | asset_url | script_tag }}
     {{ 'barba.min.js' | asset_url | script_tag }}
-    {{ 'slick.min.js' | asset_url | script_tag }}
     {{ 'gsap.min.js' | asset_url | script_tag }}
     {{ 'ScrollTrigger.min.js' | asset_url | script_tag }}
-    {{ 'core.js' | asset_url | script_tag }}
     
+    {{ 'locomotive-scroll.min.js' | asset_url | script_tag }}
+    {{ 'jquery.min.js' | asset_url | script_tag }}
+    {{ 'slick.min.js' | asset_url | script_tag }}
+
+    {{ 'core.js' | asset_url | script_tag }}
+
+    {{ 'editor.js' | asset_url | script_tag }}
+
+    {% comment %}
+    temporarily remove barba
     {% if request.design_mode %}
         {{ 'editor.js' | asset_url | script_tag }}
     {% else %}
         {{ 'scripts.js' | asset_url | script_tag }}
     {% endif %}
+    {% endcomment %}
     
 
 

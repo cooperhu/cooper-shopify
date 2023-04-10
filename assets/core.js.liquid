@@ -59,8 +59,10 @@ var initSingleProduct = function() {
 var initCartPage = function() {
   console.log('on cart page');
   // controls for quantity sliders
-  bindQuantityCount();
-  bindVariantOptions();
+  // bindQuantityCount();
+  // bindVariantOptions();
+
+  bindCartControls();
 };
 
 var initContactPage = function() {
@@ -158,9 +160,10 @@ var bindVariantOptions = function() {
         window.history.replaceState(null, null, url.toString());
 
         // change price
-        var moneyFormat = document.querySelector('.sp-price').dataset.moneyformat;
-        document.querySelector('.sp-price').textContent = formatMoney(matchedVariant.price, moneyFormat);
-        document.querySelector('.sp-compare-price').textContent = formatMoney(matchedVariant.compare_at_price, moneyFormat);
+        const format = document.querySelector('[data-moneyformat]').getAttribute('data-moneyformat');
+
+        document.querySelector('.sp-price').textContent = formatMoney(matchedVariant.price, format);
+        document.querySelector('.sp-compare-price').textContent = formatMoney(matchedVariant.compare_at_price, format);
 
         // toggle price classes
         matchedVariant.compare_at_price > matchedVariant.price ? 
@@ -175,11 +178,13 @@ var bindVariantOptions = function() {
         }
 
         // change button
-        var add = document.querySelector('#addToCart');
+        var addToCartBtn = document.querySelector('#addToCartBtn');
+        var buyItNowBtn = document.querySelector('#buyItNowBtn');
 
         if (matchedVariant.available) {
           // set add to cart button text
-          add.textContent = 'Add to Cart';
+          addToCartBtn.textContent = 'Add to Cart';
+          buyItNowBtn.classList.remove('hidden');
 
           // enable form fields 
           document.querySelectorAll('.js-disable-field').forEach(input => {
@@ -191,13 +196,31 @@ var bindVariantOptions = function() {
         });
         } else {
           // set add to cart button text
-          add.textContent = 'Out of Stock';
+          addToCartBtn.textContent = 'Sold Out';
+          buyItNowBtn.classList.add('hidden');
 
           // disable form fields
           document.querySelectorAll('.js-disable-field').forEach(input => {
             input.disabled = true;
           });
         }
+
+        // buy it now
+        buyItNowBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+
+          var form = document.querySelector('.shopify-product-form');
+
+          var input = document.createElement('input');
+          input.value = '/checkout';
+          input.type = 'hidden';
+          input.name = 'return_to';
+
+          form.appendChild(input);
+
+          form.submit();
+
+        });
       });
     });
   })
@@ -217,6 +240,96 @@ var bindGalleryControls = function() {
   });
 };
 
+var bindCartControls = function() {
+  // cart-quantity-sector
+  document.querySelectorAll('.cart-quantity-sector button').forEach(button => {
+    button.addEventListener('click', (e) => {
+      e.preventDefault(); // weird bug removes the item from cart when you interact with default
+
+      const input = button.parentElement.querySelector('input');
+      const value = Number(input.value);
+      const isPlus = button.classList.contains('js-plus');
+      const key = button.closest('.cart-item').getAttribute('data-key');
+      
+      if (isPlus) {
+        const newValue = value + 1;
+        input.value = newValue;
+        changeItemQuantity(key, newValue);
+      } else if (value > 1) {
+        const newValue = value - 1;
+        input.value = newValue;
+        changeItemQuantity(key, newValue);
+      }
+    });
+  });
+
+  document.querySelectorAll('.js-remove-cart-item').forEach(remove => {
+    remove.addEventListener('click', (e) => {
+      e.preventDefault();
+
+      const item = remove.closest('.cart-item');
+      const key = item.getAttribute('data-key')
+
+      axios.post('/cart/change.js', {
+        id: key,
+        quantity: 0
+      })
+      .then((res) => {
+        console.log(res.data);
+
+        if (res.data.items.length === 0) {
+          document.querySelector('#cart_form').remove();
+          var html = document.createElement('h4');
+          html.innerHTML = 'Your Cart is empty';
+          document.querySelector('.cart').appendChild(html);
+        } else {
+          item.remove();
+
+          // update totals
+          const totalDiscount = res.data.total_discount;
+          const totalPrice = res.data.total_price;
+          const format = document.querySelector('[data-moneyformat]').getAttribute('data-moneyformat');
+          document.querySelector('#cartTotalDiscount').textContent = formatMoney(totalDiscount, format);
+          document.querySelector('#cartTotalPrice').textContent = formatMoney(totalPrice, format);
+          console.log('.discount',totalDiscount);
+
+          if (totalDiscount === 0) {
+            document.querySelector('#cartTotalDiscount').parentElement.classList.add('hidden');
+          }
+        }
+      });
+    });
+  });
+
+  document.querySelector('[name="note"]').addEventListener('keyup', debounce((e) => {
+    // console.log(e.target.value);
+    axios.post('/cart/update.js', {
+      note: e.target.value,
+    });
+  }, 500));
+}
+
+function changeItemQuantity(key, quantity) {
+  // console.log(quantity, key);
+
+  axios.post('/cart/change.js', {
+    id: key,
+    quantity
+  })
+  .then((res) => {
+    // console.log(res.data);
+    const totalDiscount = res.data.total_discount;
+    const totalPrice = res.data.total_price;
+    const item = res.data.items.find(item => item.key === key);
+    const itemPrice = item.final_line_price;
+    const format = document.querySelector('[data-moneyformat]').getAttribute('data-moneyformat');
+
+    document.querySelector('#cartTotalDiscount').textContent = formatMoney(totalDiscount, format);
+
+    document.querySelector('#cartTotalPrice').textContent = formatMoney(totalPrice, format);
+    document.querySelector('[data-key="'+key+'"] .cart-price').textContent = formatMoney(itemPrice, format);
+  });
+}
 
 
 /* ********************************
@@ -267,4 +380,20 @@ var formatMoney = function(cents, format) {
   }
 
   return formatString.replace(placeholderRegex, value);
+};
+
+// David Walsh debounce: https://davidwalsh.name/javascript-debounce-function
+function debounce(func, wait, immediate) {
+  var timeout;
+  return function() {
+    var context = this, args = arguments;
+    var later = function() {
+      timeout = null;
+      if (!immediate) func.apply(context, args);
+    };
+    var callNow = immediate && !timeout;
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+    if (callNow) func.apply(context, args);
+  };
 };
