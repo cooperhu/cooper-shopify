@@ -1,5 +1,5 @@
 <div class="cart">
-    <h1>Cart</h1>
+    <h1>Cart: {{ cart.item_count }}</h1>
 
     <script>
         console.log('cart', {{ cart | json }});
@@ -51,7 +51,6 @@
                     Implement Order Note: https://youtu.be/Ap_csCnTSA4?t=1254
                 {% endcomment %}
                 <div class="cart-totals">
-
                     {% unless cart.total_discounts == 0 %}
                         <p>Discounts: <span id="cartTotalDiscount">{{ cart.total_discounts | money }}</span></p>
                     {% endunless %}
@@ -59,7 +58,6 @@
                     <p>Total: <span id="cartTotalPrice">{{ cart.total_price | money }}</span></p>
                 </div>
 
-                <button type="submit" name="update">Update Cart</button> 
                 <button type="submit" name="checkout">Checkout</button>
             </div>
         {% endif %}

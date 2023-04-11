@@ -174,7 +174,7 @@ textarea {
 .cart-drawer {
     position: fixed;
     top: 0.55rem;
-    right: 0.95rem;
+    right: 1rem;
 
     z-index: 2000;
 
@@ -182,7 +182,7 @@ textarea {
     opacity: 0;
 
     width: 100%;
-    max-width: 320px;
+    max-width: calc(100% - 2rem);
 
     background: var(--site-bg);
 
@@ -191,13 +191,16 @@ textarea {
 
 @media screen and (min-width: 700px) {
     .cart-drawer {
-        top: 0.55rem;
-        right: 1.95rem;
+        top: 1rem;
+        right: 2rem;
+
+        max-width: 420px;
     }
 }
 
 .cart-drawer__header,
-.cart-drawer__body {
+.cart-drawer__body,
+.cart-drawer__footer {
     padding: 0.5rem;
 }
 
@@ -247,6 +250,14 @@ textarea {
 
 .cart-drawer-item-remove:hover {
     text-decoration: none;
+}
+
+.cart-drawer__footer {
+    border-top: 1px solid black;
+}
+
+.cart-drawer__footer p {
+    margin: 0 0 0.5rem 0;
 }
 
 /* **************************
@@ -479,4 +490,49 @@ textarea {
 .contact-form-item textarea {
     display: block;
     width: 100%;
+}
+
+
+
+.site-header-search-form,
+.site-navigation {
+    display: none;
+}
+
+@media screen and (min-width: 700px) {
+    .site-header-search-form,
+    .site-navigation {
+        display: block;
+    }
+}
+
+.site-navigation,
+.site-header-search-form {
+    text-align: center;
+}
+
+.site-header {
+    background: transparent;
+    border-bottom: none;
+}
+
+.site-logo-wrapper {
+    text-align: center;
+}
+
+.site-logo {
+    display: block;
+    max-width: 140px;
+    margin: 0 auto;
+}
+
+.site-logo img {
+    max-width: 100%;
+}
+
+.cart-drawer__header h4 {
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: -0.29px;
+    font-size: 0.875rem;
 }

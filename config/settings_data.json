@@ -1,6 +1,6 @@
 {
   "current": {
-    "logo": "shopify:\/\/shop_images\/logo.svg",
+    "logo": "shopify:\/\/shop_images\/logo-wear-bully.png",
     "favicon": "shopify:\/\/shop_images\/favicon.png",
     "site_bg_color": "#fefefc",
     "show_banner": true,
@@ -8,6 +8,7 @@
     "banner_bg_color": "#41fc65",
     "banner_text_color": "#191919",
     "show_search": true,
+    "enable_order_notes": true,
     "inline": "Sitewide sale: <strong>EASTER10<\/strong> at checkout.",
     "content_for_index": [
 

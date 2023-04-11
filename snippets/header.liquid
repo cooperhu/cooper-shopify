@@ -12,8 +12,7 @@
         
         {%- if settings.logo != blank -%}
             <a class="site-logo" href="/">
-              {{ settings.logo | image_url: width: 120 | image_tag:
-                widths: '50, 120',
+              {{ settings.logo | image_url: width: 500 | image_tag:
                 height: settings.logo.height,
                 width: settings.logo.width,
                 alt: settings.logo.alt
@@ -40,5 +39,5 @@
         </form>
     {% endif %}
 
-    <button class="cart-drawer-button js-open-cart">Cart ({{ cart.item_count }})</button>
+    <button class="cart-drawer-button js-open-cart">Cart  - <span class="cart-drawer-button-count js-drawer-count">{{ cart.item_count }}</span></button>
 </header>

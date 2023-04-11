@@ -1,6 +1,8 @@
 // Barba SAP Init
 barba.init({
   preventRunning: true,
+  prefetchIgnore: ['/cart'],
+  cacheIgnore: ['/cart'],
   transitions: [{
       name: 'default-transition',
       once(data) {

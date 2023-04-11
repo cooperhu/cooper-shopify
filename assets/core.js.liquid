@@ -25,6 +25,8 @@ function initNavigation() {
   }
 };
 
+
+
 function initCartDrawer() {
   // Opens Cart
   document.querySelector('.js-open-cart').addEventListener('click', function(e) {
@@ -50,10 +52,8 @@ function initCartDrawer() {
 var initSingleProduct = function() {
   console.log('on product page');
   // controls for quantity sliders
-  bindQuantityCount();
-  bindVariantOptions();
-
   bindGalleryControls();
+  initProductForm();
 };
 
 var initCartPage = function() {
@@ -99,6 +99,14 @@ var initCollectionPage = function() {
 /* ********************************
  * Single Purpose Functions
  * ******************************** */
+/* Single Product Page Functions */
+function initProductForm() {
+  bindVariantOptions();
+  bindQuantityCount();
+  bindGalleryControls();
+  addToCart();
+}
+
 var bindQuantityCount = function() {
     console.log('bindQuantityCount');
     const addButtons = document.querySelectorAll('.js-add');
@@ -229,6 +237,53 @@ var bindVariantOptions = function() {
   });
 };
 
+function addToCart() {
+  document.querySelector('#addToCartBtn').addEventListener('click', (e) => {
+    e.preventDefault();
+
+    console.log(document.querySelector('#productId').value);
+
+    axios.get('/cart.js')
+    .then((res) => {
+      console.log('get cart', res.data);
+    });
+
+    axios.post('/cart/add.js', {
+      id: document.querySelector('#productId').value,
+      quantity: document.querySelector('#quantity').value
+    })
+    .then((res) => {
+      console.log('post item', res.data);
+      // update cart drawer
+      axios.get('/cart.js')
+      .then((res) => {
+        console.log('post get',res.data);
+        // update cart count
+        document.querySelectorAll('.js-drawer-count').forEach(counter => {
+          counter.innerHTML = res.data.item_count;
+        });
+        // update cart drawer
+        buildCartDrawer(res.data.items);
+      });
+
+      // show success message
+    });
+
+    // alert('hi');
+
+
+    /*
+    axios.post('/cart/change.js', {
+      id: key,
+      quantity
+    })
+    .then((res) => {
+      console.log(res.data);
+    });
+    */
+  });
+}
+
 var bindGalleryControls = function() {
   document.querySelectorAll('.sp-gallery-thumbs li').forEach(li => {
     li.addEventListener('click', () => {
@@ -240,6 +295,8 @@ var bindGalleryControls = function() {
   });
 };
 
+
+/* Cart Functions */ 
 var bindCartControls = function() {
   // cart-quantity-sector
   document.querySelectorAll('.cart-quantity-sector button').forEach(button => {
@@ -251,6 +308,7 @@ var bindCartControls = function() {
       const isPlus = button.classList.contains('js-plus');
       const key = button.closest('.cart-item').getAttribute('data-key');
       
+      console.log('key', key);
       if (isPlus) {
         const newValue = value + 1;
         input.value = newValue;
@@ -289,7 +347,11 @@ var bindCartControls = function() {
           const totalDiscount = res.data.total_discount;
           const totalPrice = res.data.total_price;
           const format = document.querySelector('[data-moneyformat]').getAttribute('data-moneyformat');
-          document.querySelector('#cartTotalDiscount').textContent = formatMoney(totalDiscount, format);
+          
+          const cartTotalDiscountElement = document.querySelector('#cartTotalDiscount');
+          if (cartTotalDiscountElement) {
+            cartTotalDiscountElement.textContent = formatMoney(totalDiscount, format);
+          }
           document.querySelector('#cartTotalPrice').textContent = formatMoney(totalPrice, format);
           console.log('.discount',totalDiscount);
 
@@ -311,23 +373,64 @@ var bindCartControls = function() {
 
 function changeItemQuantity(key, quantity) {
   // console.log(quantity, key);
-
   axios.post('/cart/change.js', {
     id: key,
     quantity
   })
   .then((res) => {
-    // console.log(res.data);
+    console.log(res.data);
     const totalDiscount = res.data.total_discount;
     const totalPrice = res.data.total_price;
     const item = res.data.items.find(item => item.key === key);
     const itemPrice = item.final_line_price;
     const format = document.querySelector('[data-moneyformat]').getAttribute('data-moneyformat');
+    const cartTotalDiscountElement = document.querySelector('#cartTotalDiscount');
+    if (cartTotalDiscountElement) {
+      cartTotalDiscountElement.textContent = formatMoney(totalDiscount, format);
+    }
 
-    document.querySelector('#cartTotalDiscount').textContent = formatMoney(totalDiscount, format);
-
+    document.querySelector('.js-drawer-count').textContent = res.data.item_count;
     document.querySelector('#cartTotalPrice').textContent = formatMoney(totalPrice, format);
     document.querySelector('[data-key="'+key+'"] .cart-price').textContent = formatMoney(itemPrice, format);
+  });
+}
+
+function buildCartDrawer(items) {
+  const format = document.querySelector('[data-moneyformat]').getAttribute('data-moneyformat');
+  var cartDrawerBody = document.querySelector('.cart-drawer__body');
+  cartDrawerBody.innerHTML = '';
+  
+
+  console.log('hi', items);
+
+  for (var i = 0; i < items.length; i++) {
+    let item = items[i],
+        newEl = document.createElement('div'),
+        totalPrice = formatMoney(item.final_line_price, format);
+
+    newEl.innerHTML = `
+      <div class="cart-drawer-item">    
+        <div class="cart-drawer-item-img">
+          <a href="${item.url}">
+            <img src="${item.featured_image.url}"/>
+          </a>
+        </div>
+        <div class="cart-drawer-item-info">
+          <h4 class="cart-drawer-item-title"><a href="${item.url}">${item.product_title} - ${item.variant_title} (${item.quantity})</a></h4>
+          <p class="cart-drawer-item-price">${totalPrice}</p>
+        </div>
+        <a class="cart-drawer-item-remove js-remove-cart-drawer-item" href="{{ item.url_to_remove }}">×</a>
+      </div>
+    `;
+    newEl.classList.add('cart-drawer-item');
+
+    cartDrawerBody.appendChild(newEl);
+  }
+
+  // get cart total
+  axios.get('/cart.js')
+  .then((res) => {
+    document.querySelector('.js-cart-drawer-total').innerHTML = formatMoney( res.data.total_price, format);
   });
 }
 

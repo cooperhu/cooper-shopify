@@ -69,16 +69,17 @@ shopify starter theme by connor hubeny - connorhubeny.com -->
 
     {{ 'core.js' | asset_url | script_tag }}
 
-    {{ 'editor.js' | asset_url | script_tag }}
-
     {% comment %}
     temporarily remove barba
+    {{ 'editor.js' | asset_url | script_tag }}
+    {% endcomment %}
+
     {% if request.design_mode %}
         {{ 'editor.js' | asset_url | script_tag }}
     {% else %}
         {{ 'scripts.js' | asset_url | script_tag }}
     {% endif %}
-    {% endcomment %}
+    
     
 
 
