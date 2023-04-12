@@ -13,43 +13,62 @@ barba.init({
           });
       },
       leave(data) {
-          // Remove active nav class
-          document.querySelectorAll('.site-navigation a').forEach(function(element) {
-              element.classList.remove('active');
-          });
-          gsap.to('.loading-screen', 0.25, {autoAlpha: 1, opacity: 1 });
+        // Remove active nav class
+        document.querySelectorAll('.site-navigation a').forEach(function(element) {
+            element.classList.remove('active');
+        });
 
-          // Animate out old view
-          gsap.to(data.current.container, 0.45, {
-              opacity: 0,
-              ease: "power2.inOut"
-          });
-      },
-      enter(data) {
-          // console.log('enter', data.next.url.path);
+        if (document.querySelector('.nav-button').classList.contains('active')) {
+          // Nav drawer closing transition
+          gsap.set('.loading-screen', { autoAlpha: 1 });
           
-          window.scrollTo(0, 0);
+          gsap.to('.site-navigation', {autoAlpha: 0, duration: 0.55});
+          document.querySelector('.nav-button').classList.remove('active');
+          document.body.classList.remove('fixed');
 
-          // Add active nav class
-          document.querySelectorAll('.site-navigation a').forEach(function(element) {
-            if (element.getAttribute('href') === data.next.url.path) {
-              element.classList.add('active');
+          gsap.to('.site-navigation', {autoAlpha: 0, duration: 0.55, onComplete: function(e) { 
+            gsap.to(window, {duration: 0.25, scrollTo: 0});
+            gsap.to('.loading-screen', 0.35, {autoAlpha: 0, opacity: 0, onComplete: function(e) {
+              gsap.to('.site-content', 0.65, {
+                opacity: 1,
+                ease: "power2.inOut"
+              });
+            }});
+          }});
+        } else {
+          // normal transition
+          // display loading screen
+          gsap.to('.loading-screen', 0.55, {
+            autoAlpha: 1, 
+            opacity: 1, 
+            onComplete: function(e) {
+              // scroll to top
+              gsap.to(window, {duration: 0.25, scrollTo: 0});
+              // hide nav
+              gsap.to('.loading-screen', 0.35, {autoAlpha: 0, opacity: 0, onComplete: function(e) {
+                gsap.to('.site-content', 0.65, {
+                  opacity: 1,
+                  ease: "power2.inOut"
+                });
+              }});
             }
           });
+        }
+      },
+      enter(data) {
+        let page = data.next.namespace;
+        
+        // set new container's opacity
+        gsap.set(data.next.container, {
+          opacity: 0,
+        });
 
-          gsap.to('.loading-screen', 0.25, {autoAlpha: 0, opacity: 0 });
-
-          // Fade in new content
-          let page = data.next.namespace;
-          
-          gsap.set(data.next.container, {
-              opacity: 0,
-          });
-
-          gsap.to(data.next.container, 0.45, {
-              opacity: 1,
-              ease: "power2.inOut"
-          });
+        // update nav
+        document.querySelectorAll('.site-navigation a').forEach(function(element) {
+          if (element.getAttribute('href') === data.next.url.path) {
+            element.classList.add('active');
+          }
+        });
       },
   }],
   views: [{

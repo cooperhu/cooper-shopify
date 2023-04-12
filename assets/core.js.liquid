@@ -12,6 +12,26 @@ initNavigation();
  * Sitewide Functions
  * *********************** */
 function initNavigation() {
+  const navButton = document.querySelector('.nav-button');
+  const nav = document.querySelector('.site-navigation');
+  const body = document.body;
+
+  navButton.addEventListener('click', function(e) {
+    e.preventDefault();
+
+    closeCartDrawer();
+
+    this.classList.toggle('active');
+    body.classList.toggle('fixed');
+
+    if (this.classList.contains('active')) {
+      gsap.to(nav, {autoAlpha: 1, duration: 0.5});
+    } else {
+      // do ani
+      gsap.to(nav, {autoAlpha: 0, duration: 0.5});
+    }
+  });
+
   // Enable sticky nav
   if (document.querySelector('.site-header').classList.contains('is-sticky')) {
     ScrollTrigger.create({
@@ -28,7 +48,7 @@ function initCartDrawer() {
   // Opens Cart
   document.querySelector('.js-open-cart').addEventListener('click', function(e) {
     e.preventDefault();
-    document.querySelector('.cart-drawer').classList.add = 'active';
+    document.querySelector('.cart-drawer').classList.add('active');
     gsap.to('.cart-drawer', 0.35, {autoAlpha: 1, opacity: 1, display: 'flex' }); // this also fires in updatecartdrawerui function (need to combine)
   });
 
@@ -40,7 +60,19 @@ function initCartDrawer() {
   });
 
   // Removes item from cart drawer list (WIP)
+  const cartButtons = document.querySelectorAll('.cart-drawer-item-title a');
+  cartButtons.forEach(cartButton => {
+    cartButton.addEventListener('click', function () {
+      closeCartDrawer();
+    });
+  });
+  //closeCartDrawer()
 };
+
+function closeCartDrawer() {
+  document.querySelector('.cart-drawer').classList.remove('active');
+  gsap.to('.cart-drawer', 0.35, {autoAlpha: 0, opacity: 0, display: 'none'});
+}
 
 // Allows WP Links to operate normally
 // document.querySelectorAll("#wpadminbar a").forEach(item=>item.setAttribute('data-barba-prevent','self'));
@@ -413,8 +445,8 @@ function changeItemQuantity(key, quantity) {
 }
 
 function updateCartUI(newitem, cartobj, exists) {
-  console.log('new item', newitem);
-  console.log('latest cart', cartobj);
+  //console.log('new item', newitem);
+  //console.log('latest cart', cartobj);
   // item id
   const newItemId = newitem.id;
   // moneyFormat

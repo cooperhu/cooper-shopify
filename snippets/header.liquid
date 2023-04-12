@@ -24,12 +24,24 @@
         </a>
 
     </div>
+
+    <a href="#" class="nav-button">
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+    </a>
     
     <nav class="site-navigation">
-        {% for link in linklists.main-menu.links -%}
-            <a href="{{ link.url }}" {% if link.current %}aria-current="page" class="active" {% endif %}>{{ link.title }}</a>
-        {%- endfor %}
-        <a href="/cart" {% if template == 'cart' %}aria-current="page" class="active"{% endif %}>Cart</a>
+        <div>
+            {% for link in linklists.main-menu.links -%}
+                <div class="site-navigation-item"><a href="{{ link.url }}" {% if link.current %}aria-current="page" class="active" {% endif %}>{{ link.title }}</a></div>
+            {%- endfor %}
+            {% if settings.instagram %}
+                <div class="site-navigation-item"><a href="{{ settings.instagram }}" target="_blank">Instagram</a></div>
+            {% endif %}
+            <div class="site-navigation-item"><a href="/cart" {% if template == 'cart' %}aria-current="page" class="active"{% endif %}>Cart</a></div>
+        </div>
     </nav>
 
     {% if settings.show_search %}

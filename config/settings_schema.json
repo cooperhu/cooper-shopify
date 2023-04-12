@@ -61,7 +61,7 @@
             "default": "#ffffff"
           }
         ]
-    },
+    }, 
     {
         "name": "Site Settings",
         "settings": [
@@ -100,5 +100,15 @@
                 "default": true
             }
         ]
+    },
+    {
+      "name": "Socials",
+      "settings": [
+        {
+          "type": "url",
+          "id": "instagram",
+          "label": "Instagram"
+        }
+      ]
     }
 ]

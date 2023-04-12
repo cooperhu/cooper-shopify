@@ -38,7 +38,7 @@ body {
 body {
     position: relative;
 
-    font-family: 'Helvetica', sans-serif;
+    font-family: Helvetica, "Helvetica Neue", Arial, sans-serif;
 
     /* Sets .site-main to fill available space at minimum. Can be removed. */
     display: flex;
@@ -50,9 +50,17 @@ body {
     color: var(--site-text);
     background: var(--site-bg);
 
-    /* background-color: {{ settings.bg }};
-    color: {{ settings.text_color }}; */
+    overflow-x: hidden;
+
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+
 }
+
+body.fixed {
+    overflow: hidden;
+}
+
 
 img {
   max-width: 100%;
@@ -126,7 +134,7 @@ textarea {
  * ************************** */
 .sitewide-banner {
     position: relative;
-    z-index: 700;
+    z-index: 1500;
 
     padding: 0.35rem var(--padding-side-sm);
 
@@ -164,15 +172,153 @@ textarea {
 }
 
 /* Nav ********************* */
+.nav-button {
+  position: absolute;
+  top: 14px;
+  left: var(--padding-side-sm);
+  z-index: 10000;
+
+  display: block;
+
+  width: 30px;
+  /* height: 32px; */
+  padding: 1rem 0;
+
+  appearance: none;
+  border: none;
+  background: transparent;
+
+  cursor: pointer;
+}
+
+@media screen and (min-width: 700px) {
+    .nav-button {
+      left: var(--padding-side-md);
+    }
+}
+
+@media screen and (min-width: 1000px) {
+    .nav-button {
+        display: none;
+    }
+}
+
+.nav-button span {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 1px;
+
+    background: #000;
+    opacity: 1;
+
+    transform: translateY(-50%);
+    transform-origin: center center;
+
+    transition: top 250ms ease-out, opacity 150ms ease, transform 250ms ease-out, background 250ms ease-out;
+}
+
+.nav-button span:first-child { top: 25%;    }
+
+.nav-button span:nth-child(3n) { opacity: 0; }
+
+.nav-button span:nth-child(2n),
+.nav-button span:nth-child(3n) { top: 50%;  }
+
+.nav-button span:last-child { top: 75%; }
+
+
+.nav-button.active span {
+    top: 50%;
+    width: 100%;
+
+}
+      
+.nav-button.active span:first-child {
+    opacity: 0;
+    transform: translateY(-50%);
+    transition-delay: 0;
+}
+
+.nav-button.active span:nth-child(2n) {
+    transform: rotate(-45deg);
+}
+
+.nav-button.active span:nth-child(3n) {
+    transform: rotate(45deg);
+    opacity: 1;
+}
+
+.nav-button.active span:last-child {
+    opacity: 0;
+    transition-delay: 0;
+}
+
+
 .site-navigation {
     padding: 0.5rem 0;
     margin: 0;
+
+    opacity: 0;
+    visibility: hidden;
+
+    position: fixed;
+    top: -30vh;
+    top: -30svh;
+    left: 0;
+
+    width: 100%;
+    
+    height: 160vh;
+    height: 160svh;
+
+    background: var(--site-bg);
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    padding: 7rem var(--padding-side-sm);
 }
 
+.site-navigation-item {
+    padding: 0.5rem 0;
+    margin: 0.5rem 0;
+}
+/*
 .site-navigation a {
     display: inline-block;
     padding-right: 0.75rem;
 }
+*/
+
+@media screen and (min-width: 1000px) {
+    .site-navigation {
+        position: relative;
+
+        padding: 0;
+
+        height: initial;
+
+        opacity: 1 !important;
+        visibility: visible !important;
+
+        background: transparent;
+    }
+
+    .site-navigation-item {
+        display: inline-block;
+        padding: 0 0.75rem 0 0;
+        margin: 0;
+    }
+
+    /*.site-navigation a {
+        display: inline-block;
+        padding-right: 0.75rem;
+    }*/
+}
+
+
 
 .site-navigation a.active {
     font-weight: 700;
@@ -242,6 +388,13 @@ textarea {
         max-height: calc(100vh - 2rem);
         max-height: calc(100svh - 2rem);
     }
+}
+
+.cart-drawer-label {
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: -.29px;
+    font-size: .875rem;
 }
 
 .cart-drawer__header,
@@ -377,6 +530,17 @@ textarea {
     .product-grid {
         grid-template-columns: 1fr 1fr 1fr 1fr;   
     }
+
+    .product-grid.homepage {
+        grid-template-columns: 1fr 1fr 1fr;
+        max-width: 1200px;
+        margin: 0 auto;  
+    }
+
+    .product-grid .product-card {
+        max-width: 380px;
+        margin: 0 auto;
+    }
 }
 
 .product-pagination {
@@ -385,6 +549,7 @@ textarea {
 }
 
 .product-card {
+    margin-bottom: 2rem;
     text-align: center;
 }
 
@@ -428,7 +593,14 @@ textarea {
 }
 
 .sp-wrapper {
-    max-width: 420px;
+    max-width: 340px;
+    margin: 0 auto;
+}
+
+@media screen and (min-width: 700px) {
+    .sp-wrapper {
+        margin: 0;
+    }
 }
 
 .sp-gallery {
@@ -440,7 +612,7 @@ textarea {
 }
 
 .sp-gallery-thumbs {
-    margin: 0.25rem 0 0 0;
+    margin: 0.25rem 0;
     padding: 0;
     list-style: none;
 
@@ -455,6 +627,8 @@ textarea {
     aspect-ratio: 1;
 
     cursor: pointer;
+
+    overflow: hidden;
 }
 
 .sp-gallery-thumbs li.active {
@@ -463,6 +637,10 @@ textarea {
 
 .sp-gallery-thumbs li img {
     position: absolute;
+    top: 50%;
+    left: 50%;
+
+    transform: translate(-50%, -50%) scale(1.02);
 
     min-width: 100%;
     min-height: 100%;
@@ -572,8 +750,13 @@ textarea {
 }
 
 .page-content {
-    max-width: 800px;
+    max-width: 700px;
     margin: 0 auto;
+}
+
+.page-content p {
+    margin: 0 0 1rem 0;
+    line-height: 1.4;
 }
 
 .page-content p a {
@@ -583,6 +766,10 @@ textarea {
 /* **************************
  * Page: Contact
  * ************************** */
+.contact-page {
+    max-width: 700px;
+    margin: 0 auto;
+}
 .contact-form-item {
     margin-bottom: 1rem;
     max-width: 280px; /* Can remove */
@@ -599,19 +786,9 @@ textarea {
 }
 
 
-
-.site-header-search-form,
-.site-navigation {
-    display: none;
-}
-
-@media screen and (min-width: 700px) {
-    .site-header-search-form,
-    .site-navigation {
-        display: block;
-    }
-}
-
+/* **************************
+ * SPECIFIC TO BULLY
+ * ************************** */
 .site-navigation,
 .site-header-search-form {
     text-align: center;
@@ -627,6 +804,8 @@ textarea {
 }
 
 .site-logo {
+    position: relative;
+    z-index: 1200;
     display: block;
     max-width: 140px;
     margin: 0 auto;
@@ -641,4 +820,122 @@ textarea {
     text-transform: uppercase;
     letter-spacing: -0.29px;
     font-size: 0.875rem;
+}
+/* **************************
+ * BULLY TEXT STYLES
+ * ************************** */
+.product-card__title {
+    font-size: 0.76563rem;
+    letter-spacing: 0.2px;
+    font-weight: 700;
+    line-height: 1;
+    text-transform: uppercase;
+}
+
+.sp-title {
+    margin: 0;
+    text-transform: uppercase;
+
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+    text-align: center;
+
+    font-size: 1.09375rem;
+    letter-spacing: 0.005rem;
+    line-height: 1.4;
+    margin: 0;
+}
+
+.sp-price {
+    font-size: 15px;
+    letter-spacing: .2px;
+    margin-bottom: 1.75rem;
+}
+
+.sp-description {
+    font-size: 15px;
+    line-height: 1.4;
+
+    text-align: center;
+}
+
+.sp-price-wrapper {
+    justify-content: center;
+}
+
+@media screen and (min-width: 700px) {
+    .sp-title,
+    .sp-description {
+        text-align: left;
+    }
+
+
+    .sp-price-wrapper {
+        justify-content: flex-start;
+    }
+}
+
+@media screen and (min-width: 700px) {
+    .single-product__right {
+        padding-left: 2rem;
+    }
+}
+
+@media screen and (min-width: 1200px) {
+    .single-product__right {
+        padding-left: 6rem;
+    }
+}
+html.no-touchevents .product-card a .product-card__title {
+    opacity: 0;
+    transition: opacity 0.39s cubic-bezier(0.49, 0.07, 0.38, 0.93);
+}
+
+html.no-touchevents .product-card a:hover {
+    text-decoration: none;
+}
+
+html.no-touchevents .product-card a:hover .product-card__title {
+    opacity: 1;
+}
+.site-navigation-item a {
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 0.29px;
+    font-size: .875rem;
+
+    transition: all 250ms ease;
+}
+.site-navigation-item a:hover {
+    font-weight: 700;
+    text-decoration: none;
+}
+
+@media screen and (min-width: 1000px) {
+    .site-navigation {
+        position: fixed;
+
+        top: 1.3rem;
+        left: 2rem;
+
+        max-width: 120px;
+    }
+
+    .site-navigation-item {
+        display: block;
+        text-align: left;
+
+        margin: 0.45rem 0;
+    }
+    .site-navigation-item a {
+        font-weight: 400;
+        text-transform: uppercase;
+        letter-spacing: 0.2px;
+        font-size: 0.76563rem;
+    }
+
+    /* collections page */
+    #collections--all {
+        padding-left: 140px;
+    }
 }

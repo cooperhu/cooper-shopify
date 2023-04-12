@@ -1,0 +1,10 @@
+<div class="loading-screen">
+    {%- if settings.loading_icon != blank -%}
+        {{ settings.loading_icon | image_url: width: 200 | image_tag:
+            height: settings.loading_icon.height,
+            width: settings.loading_icon.width,
+            alt: settings.loading_icon.alt,
+            class: 'loading-screen-icon'
+        }}
+    {%- endif -%}
+</div><!-- class: 'loading-screen-icon animate__animated animate__pulse animate__infinite' -->
