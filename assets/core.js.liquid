@@ -4,7 +4,6 @@
  * - Only init barba on front-end script (not editor.js)
  *   so be sure to add any new functionality to both files
  * ********************************************************* */
-
 // Sitewide Init Functions
 initCartDrawer();
 initNavigation();
@@ -28,16 +27,25 @@ function initNavigation() {
 
 
 function initCartDrawer() {
+  /*
+  axios.get('/cart.js')
+  .then((res) => {
+    console.log('INIT CART', res.data);
+  });
+  */
+
   // Opens Cart
   document.querySelector('.js-open-cart').addEventListener('click', function(e) {
     e.preventDefault();
-    gsap.to('.cart-drawer', 0.35, {autoAlpha: 1, opacity: 1});
+    document.querySelector('.cart-drawer').classList.add = 'active';
+    gsap.to('.cart-drawer', 0.35, {autoAlpha: 1, opacity: 1, display: 'flex' }); // this also fires in updatecartdrawerui function (need to combine)
   });
 
   // Closes Cart
   document.querySelector('.js-close-cart').addEventListener('click', function(e) {
     e.preventDefault();
-    gsap.to('.cart-drawer', 0.35, {autoAlpha: 0, opacity: 0});
+    document.querySelector('.cart-drawer').classList.remove('active');
+    gsap.to('.cart-drawer', 0.35, {autoAlpha: 0, opacity: 0, display: 'none'});
   });
 
   // Removes item from cart drawer list (WIP)
@@ -51,16 +59,11 @@ function initCartDrawer() {
  * ******************************** */
 var initSingleProduct = function() {
   console.log('on product page');
-  // controls for quantity sliders
-  bindGalleryControls();
   initProductForm();
 };
 
 var initCartPage = function() {
   console.log('on cart page');
-  // controls for quantity sliders
-  // bindQuantityCount();
-  // bindVariantOptions();
 
   bindCartControls();
 };
@@ -101,13 +104,17 @@ var initCollectionPage = function() {
  * ******************************** */
 /* Single Product Page Functions */
 function initProductForm() {
+  // update variant UI 
   bindVariantOptions();
+  // Bind quantity +/- controls
   bindQuantityCount();
+  // bind gallery/thumbnail clicks
   bindGalleryControls();
+  // custom add to cart form submit
   addToCart();
 }
 
-var bindQuantityCount = function() {
+function bindQuantityCount() {
     console.log('bindQuantityCount');
     const addButtons = document.querySelectorAll('.js-add');
     addButtons.forEach(function (addButton) {
@@ -126,7 +133,7 @@ var bindQuantityCount = function() {
     });
 };
 
-var bindVariantOptions = function() {
+function bindVariantOptions() {
   var productURL = document.querySelector('.single-product').dataset.producturl;
 
   fetch(productURL + '.js')
@@ -192,12 +199,13 @@ var bindVariantOptions = function() {
         if (matchedVariant.available) {
           // set add to cart button text
           addToCartBtn.textContent = 'Add to Cart';
-          buyItNowBtn.classList.remove('hidden');
+
+          if (buyItNowBtn) {
+            buyItNowBtn.classList.remove('hidden');
+          }
 
           // enable form fields 
-          document.querySelectorAll('.js-disable-field').forEach(input => {
-            input.disabled = false;
-          });
+          disableProductFormField(false);
 
           document.querySelectorAll('.sp-option input[type="radio"]:checked').forEach(radio => {
           selectedOptions.push(radio.value)
@@ -205,30 +213,31 @@ var bindVariantOptions = function() {
         } else {
           // set add to cart button text
           addToCartBtn.textContent = 'Sold Out';
-          buyItNowBtn.classList.add('hidden');
+          if (buyItNowBtn) {
+            buyItNowBtn.classList.add('hidden');
+          }
 
           // disable form fields
-          document.querySelectorAll('.js-disable-field').forEach(input => {
-            input.disabled = true;
-          });
+          disableProductFormField(true);
         }
 
         // buy it now
-        buyItNowBtn.addEventListener('click', (e) => {
-          e.preventDefault();
+        if (buyItNowBtn) {
+          buyItNowBtn.addEventListener('click', (e) => {
+            e.preventDefault();
 
-          var form = document.querySelector('.shopify-product-form');
+            var form = document.querySelector('.shopify-product-form');
 
-          var input = document.createElement('input');
-          input.value = '/checkout';
-          input.type = 'hidden';
-          input.name = 'return_to';
+            var input = document.createElement('input');
+            input.value = '/checkout';
+            input.type = 'hidden';
+            input.name = 'return_to';
 
-          form.appendChild(input);
+            form.appendChild(input);
 
-          form.submit();
-
-        });
+            form.submit();
+          });
+        }
       });
     });
   })
@@ -237,36 +246,89 @@ var bindVariantOptions = function() {
   });
 };
 
+function disableProductFormField(state) {
+  document.querySelectorAll('.js-disable-field').forEach(input => {
+    input.disabled = state;
+  });
+}
+
 function addToCart() {
+  document.querySelector('.shopify-product-form').addEventListener('submit', (e) => {
+    // prevent form submission
+    e.preventDefault();
+    // disable buttons to prevent multiple submission
+    disableProductFormField(true);
+    
+    // get the cart obj
+    axios.get('/cart.js')
+    .then((res) => {
+      // get product going to cart's id
+      var newItemID = document.querySelector('#productId').value;
+      // get quantity in form
+      var quantityInput = document.querySelector('#quantity').value;
+
+      // check if product already exists in cart
+      var obj = res.data.items.find(element => element.id === parseInt(newItemID));
+
+      if (obj) {
+        // increase quantity
+        let quantity = obj.quantity + parseInt(quantityInput);
+        
+        axios.post('/cart/change.js', {
+          id: obj.key,
+          quantity
+        })
+        .then((res) => {
+          axios.get('/cart.js')
+          .then((res) => {
+            // get updated obj
+            var newitem = res.data.items.find(element => element.id === parseInt(newItemID));
+            // update UI elements
+            updateCartUI(newitem, res.data, true);
+          });
+        });
+      } else {
+        console.log('new item');
+        axios.post('/cart/add.js', {
+          id: newItemID,
+          quantity: parseInt(quantityInput)
+        })
+        .then((res) => {
+          let newitem = res.data;
+          axios.get('/cart.js')
+          .then((res) => {
+            // update UI elements
+            // updateCartDrawer(res.data);
+            updateCartUI(newitem, res.data);
+          });
+          
+        });
+      }
+      // enable buttons/allow resubmission
+      disableProductFormField(false);
+    });
+  });
+  /*
   document.querySelector('#addToCartBtn').addEventListener('click', (e) => {
     e.preventDefault();
 
-    console.log(document.querySelector('#productId').value);
+    // console.log(document.querySelector('#productId').value);
 
+    /*
     axios.get('/cart.js')
     .then((res) => {
-      console.log('get cart', res.data);
+      console.log('test get cart', res.data);
     });
+    *
 
     axios.post('/cart/add.js', {
       id: document.querySelector('#productId').value,
       quantity: document.querySelector('#quantity').value
     })
     .then((res) => {
-      console.log('post item', res.data);
+      // console.log('post success', res.data);
       // update cart drawer
-      axios.get('/cart.js')
-      .then((res) => {
-        console.log('post get',res.data);
-        // update cart count
-        document.querySelectorAll('.js-drawer-count').forEach(counter => {
-          counter.innerHTML = res.data.item_count;
-        });
-        // update cart drawer
-        buildCartDrawer(res.data.items);
-      });
-
-      // show success message
+      updateCartDrawer(res.data);
     });
 
     // alert('hi');
@@ -280,8 +342,9 @@ function addToCart() {
     .then((res) => {
       console.log(res.data);
     });
-    */
+    
   });
+  */
 }
 
 var bindGalleryControls = function() {
@@ -395,43 +458,67 @@ function changeItemQuantity(key, quantity) {
   });
 }
 
-function buildCartDrawer(items) {
+function updateCartUI(newitem, cartobj, exists) {
+  console.log('new item', newitem);
+  console.log('latest cart', cartobj);
+  // item id
+  const newItemId = newitem.id;
+  // moneyFormat
   const format = document.querySelector('[data-moneyformat]').getAttribute('data-moneyformat');
-  var cartDrawerBody = document.querySelector('.cart-drawer__body');
-  cartDrawerBody.innerHTML = '';
-  
+  // updated cart price
+  var totalPrice = formatMoney(cartobj.total_price, format);
+  // update cart count
+  document.querySelectorAll('.js-drawer-count').forEach(counter => {
+    counter.innerHTML = cartobj.item_count;
+  });
 
-  console.log('hi', items);
+  if (exists) {
+    // find and update UI elements
+    const cartDrawerItem = document.querySelectorAll('.cart-drawer-item').forEach(item => {
+      const cartDrawerItemId = item.getAttribute('data-product-id');
+      if (parseInt(cartDrawerItemId) === newItemId) {
+        const obj = cartobj.items.find(element => element.id === newItemId);
+        item.querySelector('.js-cart-item-quantity').innerHTML = obj.quantity, format;// quantity
+        item.querySelector('.js-cart-item-price').innerHTML = formatMoney(obj.final_line_price, format);// final_line_price
 
-  for (var i = 0; i < items.length; i++) {
-    let item = items[i],
-        newEl = document.createElement('div'),
-        totalPrice = formatMoney(item.final_line_price, format);
 
-    newEl.innerHTML = `
-      <div class="cart-drawer-item">    
+      }
+    });
+  } else {
+    // create the element and add it to top of cart. 
+    const cartBody = document.querySelector('.cart-drawer__body');
+
+    const productTitle = newitem.variant_title ? newitem.product_title + ' - ' + newitem.variant_title : newitem.product_title;
+
+    let itemMarkup =  `
+      <div class="cart-drawer-item js-set-fade-in" data-product-id="${newitem.id }" style="opacity: 0;">
         <div class="cart-drawer-item-img">
-          <a href="${item.url}">
-            <img src="${item.featured_image.url}"/>
+          <a href="${newitem.url}">
+            <img src="${newitem.featured_image.url}"/>
           </a>
         </div>
         <div class="cart-drawer-item-info">
-          <h4 class="cart-drawer-item-title"><a href="${item.url}">${item.product_title} - ${item.variant_title} (${item.quantity})</a></h4>
+          <h4 class="cart-drawer-item-title"><a href="${newitem.url}">${productTitle} (<span class="js-cart-item-quantity">${newitem.quantity}</span>)</a></h4>
           <p class="cart-drawer-item-price">${totalPrice}</p>
         </div>
-        <a class="cart-drawer-item-remove js-remove-cart-drawer-item" href="{{ item.url_to_remove }}">×</a>
       </div>
     `;
-    newEl.classList.add('cart-drawer-item');
 
-    cartDrawerBody.appendChild(newEl);
+    // Insert new HTML at the top of the existing element
+    cartBody.insertAdjacentHTML('afterbegin', itemMarkup);
+
+    gsap.to('.js-set-fade-in', 0.6, {opacity: 1, delay: 0.1});
   }
-
-  // get cart total
-  axios.get('/cart.js')
-  .then((res) => {
-    document.querySelector('.js-cart-drawer-total').innerHTML = formatMoney( res.data.total_price, format);
-  });
+  
+  // update total price
+  document.querySelector('.js-cart-drawer-total').innerHTML = totalPrice;
+  
+  // open drawer if it's not already open
+  const cartEl = document.querySelector('.cart-drawer');
+  if (!cartEl.classList.contains('active')) {
+    cartEl.classList.add('active');
+    gsap.to('.cart-drawer', 0.35, {autoAlpha: 1, opacity: 1, display: 'flex' });
+  }  
 }
 
 

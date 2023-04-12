@@ -8,7 +8,7 @@
             <h5 style="text-align: center;">Your Cart is empty</h5>
         {% else %}
             {% for item in cart.items %}
-                <div class="cart-drawer-item">    
+                <div class="cart-drawer-item" data-product-id="{{ item.id }}">    
                     <div class="cart-drawer-item-img">
                         <a href="{{ item.url }}">
                             <img src="{{ item.image | image_url: width: 75}}" 
@@ -20,11 +20,11 @@
                     </div>
 
                     <div class="cart-drawer-item-info">
-                        <h4 class="cart-drawer-item-title"><a href="{{ item.url }}">{{ item.title }} ({{ item.quantity }})</a></h4>
-                        <p class="cart-drawer-item-price">{{ item.final_line_price | money }}</p>
+                        <h4 class="cart-drawer-item-title"><a href="{{ item.url }}">{{ item.title }} (<span class="js-cart-item-quantity">{{ item.quantity }}</span>)</a></h4>
+                        <p class="cart-drawer-item-price js-cart-item-price">{{ item.final_line_price | money }}</p>
                     </div>
                     
-                    <a class="cart-drawer-item-remove js-remove-cart-drawer-item" href="{{ item.url_to_remove }}">×</a>
+                    <!--<a class="cart-drawer-item-remove js-remove-cart-drawer-item" href="{{ item.url_to_remove }}">×</a> -->
 
                 </div>
             {% endfor %}
