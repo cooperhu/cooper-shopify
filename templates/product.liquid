@@ -61,14 +61,25 @@
                             <fieldset>
                                 <legend>{{ option.name }}</legend>
                                 {% for value in option.values %}
-                                    <div>
+                                    
+                                    <label class="option-item option-{{ option.name | downcase}}" for="{{ option.name | handlize }}-{{ value | handlize }}">
+                                        <input type="radio" 
+                                                name="{{ option.name }}"
+                                                value="{{ value }}"
+                                                id="{{ option.name | handlize }}-{{ value | handlize }}"
+                                                {% if option.selected_value == value %} checked {% endif %}/>
+                                        <span class="option-square">{{ value }}</span>
+                                    </label>
+                                    
+                                    <!--
+                                    <div class="option-{{ option.name | downcase}}">
                                         <input type="radio" 
                                             name="{{ option.name }}"
                                             value="{{ value }}"
                                             id="{{ option.name | handlize }}-{{ value | handlize }}"
                                             {% if option.selected_value == value %} checked {% endif %}/>
                                         <label for="{{ option.name | handlize }}-{{ value | handlize }}">{{ value }}</label>
-                                    </div>
+                                    </div>-->
                                 {% endfor %}
                             </fieldset>
                         </div>
