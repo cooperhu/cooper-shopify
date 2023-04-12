@@ -14,6 +14,12 @@
             "info": "Will be scaled down to 32 x 32px"
           },
           {
+            "type": "image_picker",
+            "id": "loading_icon",
+            "label": "Loading icon",
+            "info": "The icon/image shown between page transitions"
+          },
+          {
             "type": "color",
             "id": "site_bg_color",
             "label": "Background Color",

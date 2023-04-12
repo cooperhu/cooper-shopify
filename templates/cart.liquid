@@ -1,11 +1,6 @@
 
 <div class="cart">
-    <h1>Cart: {{ cart.item_count }}</h1>
-
-    <script>
-        console.log('cart', {{ cart | json }});
-    </script>
-
+    <h1>Cart</h1>
 
     {% form 'cart', cart %}
         {% if cart.empty? %}

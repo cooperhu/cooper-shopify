@@ -3,7 +3,7 @@
         <h4>Cart - <span class="js-drawer-count">{{ cart.item_count }}</span></h4>
         <button class="cart-drawer-close-btn js-close-cart">Close</button>
     </div>
-    <div class="cart-drawer__body">
+    <div class="cart-drawer__body {% if cart.empty? %} empty {% endif %}">
         {% if cart.empty? %}
             <h5 style="text-align: center;">Your Cart is empty</h5>
         {% else %}
@@ -33,6 +33,6 @@
     </div>
     <div class="cart-drawer__footer">
         <p>Total: <span class="js-cart-drawer-total">{{ cart.total_price | money }}</span></p>
-        <button type="submit" name="checkout">Checkout</button>
+        <button type="submit" name="checkout" data-barba-prevent="self">Checkout</button>
     </div>
 </div>

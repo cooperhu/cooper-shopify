@@ -33,7 +33,7 @@ shopify starter theme by connor hubeny - connorhubeny.com -->
     
     {{ content_for_header }}
 
-    {{ 'locomotive-scroll.min.css' | asset_url | stylesheet_tag }}
+    {{ 'animate.min.css' | asset_url | stylesheet_tag }}
     {{ 'slick.css' | asset_url | stylesheet_tag }}
     {{ 'main.css' | asset_url | stylesheet_tag }}
 
@@ -47,7 +47,18 @@ shopify starter theme by connor hubeny - connorhubeny.com -->
 
     {% render 'cart-drawer' %}
 
-    <main class="site-main" data-barba="wrapper">
+    <div class="loading-screen">
+        {%- if settings.loading_icon != blank -%}
+            {{ settings.loading_icon | image_url: width: 200 | image_tag:
+                height: settings.loading_icon.height,
+                width: settings.loading_icon.width,
+                alt: settings.loading_icon.alt,
+                class: 'loading-screen-icon animate__animated animate__pulse animate__infinite'
+            }}
+        {%- endif -%}
+    </div>
+
+    <main class="site-main {% if page %}css-center-align{% endif %}" data-barba="wrapper">
         <div id="{% if request.path == '/' %}index{% else %}{{ request.path | remove_first: '/' | replace: '/', '--' }}{% endif %}"
              class="site-content" 
              data-barba="container"

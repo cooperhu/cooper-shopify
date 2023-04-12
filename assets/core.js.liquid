@@ -24,16 +24,7 @@ function initNavigation() {
   }
 };
 
-
-
 function initCartDrawer() {
-  /*
-  axios.get('/cart.js')
-  .then((res) => {
-    console.log('INIT CART', res.data);
-  });
-  */
-
   // Opens Cart
   document.querySelector('.js-open-cart').addEventListener('click', function(e) {
     e.preventDefault();
@@ -308,43 +299,6 @@ function addToCart() {
       disableProductFormField(false);
     });
   });
-  /*
-  document.querySelector('#addToCartBtn').addEventListener('click', (e) => {
-    e.preventDefault();
-
-    // console.log(document.querySelector('#productId').value);
-
-    /*
-    axios.get('/cart.js')
-    .then((res) => {
-      console.log('test get cart', res.data);
-    });
-    *
-
-    axios.post('/cart/add.js', {
-      id: document.querySelector('#productId').value,
-      quantity: document.querySelector('#quantity').value
-    })
-    .then((res) => {
-      // console.log('post success', res.data);
-      // update cart drawer
-      updateCartDrawer(res.data);
-    });
-
-    // alert('hi');
-
-
-    /*
-    axios.post('/cart/change.js', {
-      id: key,
-      quantity
-    })
-    .then((res) => {
-      console.log(res.data);
-    });
-    
-  });
-  */
 }
 
 var bindGalleryControls = function() {
@@ -478,10 +432,8 @@ function updateCartUI(newitem, cartobj, exists) {
       const cartDrawerItemId = item.getAttribute('data-product-id');
       if (parseInt(cartDrawerItemId) === newItemId) {
         const obj = cartobj.items.find(element => element.id === newItemId);
-        item.querySelector('.js-cart-item-quantity').innerHTML = obj.quantity, format;// quantity
+        item.querySelector('.js-cart-item-quantity').innerHTML = obj.quantity;// quantity
         item.querySelector('.js-cart-item-price').innerHTML = formatMoney(obj.final_line_price, format);// final_line_price
-
-
       }
     });
   } else {
@@ -489,9 +441,10 @@ function updateCartUI(newitem, cartobj, exists) {
     const cartBody = document.querySelector('.cart-drawer__body');
 
     const productTitle = newitem.variant_title ? newitem.product_title + ' - ' + newitem.variant_title : newitem.product_title;
-
+    const productLinePrice = formatMoney(newitem.final_line_price, format);  
+      
     let itemMarkup =  `
-      <div class="cart-drawer-item js-set-fade-in" data-product-id="${newitem.id }" style="opacity: 0;">
+      <div class="cart-drawer-item js-set-fade-in" data-product-id="${newitem.id}" style="opacity: 0;">
         <div class="cart-drawer-item-img">
           <a href="${newitem.url}">
             <img src="${newitem.featured_image.url}"/>
@@ -499,13 +452,18 @@ function updateCartUI(newitem, cartobj, exists) {
         </div>
         <div class="cart-drawer-item-info">
           <h4 class="cart-drawer-item-title"><a href="${newitem.url}">${productTitle} (<span class="js-cart-item-quantity">${newitem.quantity}</span>)</a></h4>
-          <p class="cart-drawer-item-price">${totalPrice}</p>
+          <p class="cart-drawer-item-price js-cart-item-price">${productLinePrice}</p>
         </div>
       </div>
     `;
 
-    // Insert new HTML at the top of the existing element
-    cartBody.insertAdjacentHTML('afterbegin', itemMarkup);
+    if (document.querySelector('.cart-drawer__body').classList.contains('empty')) {
+      cartBody.innerHTML = itemMarkup;
+      document.querySelector('.cart-drawer__body').classList.remove('empty')
+    } else {
+      // Insert new HTML at the top of the existing element
+      cartBody.insertAdjacentHTML('afterbegin', itemMarkup);
+    }
 
     gsap.to('.js-set-fade-in', 0.6, {opacity: 1, delay: 0.1});
   }
@@ -515,10 +473,14 @@ function updateCartUI(newitem, cartobj, exists) {
   
   // open drawer if it's not already open
   const cartEl = document.querySelector('.cart-drawer');
+  
   if (!cartEl.classList.contains('active')) {
+    console.log('working');
     cartEl.classList.add('active');
     gsap.to('.cart-drawer', 0.35, {autoAlpha: 1, opacity: 1, display: 'flex' });
-  }  
+  } else {
+    console.log('why');
+  }
 }
 
 

@@ -43,6 +43,7 @@ body {
     /* Sets .site-main to fill available space at minimum. Can be removed. */
     display: flex;
     flex-direction: column;
+
     min-height: 100vh;
     min-height: 100svh;
 
@@ -88,12 +89,44 @@ textarea {
     font-family: 'Helvetica', sans-serif;
 }
 
+.loading-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+
+    z-index: 800;
+
+    width: 100%;
+    height: 100vh;
+    height: 100svh;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    padding: 1rem;
+
+    background: var(--site-bg);
+
+    opacity: 0;
+    visibility: hidden;
+}
+
+
+.loading-screen-icon {
+    display: block;
+
+    max-width: 50px;
+    width: 100%;
+}
+
 /* **************************
  * Header 
  * ************************** */
 .sitewide-banner {
     position: relative;
-    z-index: 1000;
+    z-index: 700;
 
     padding: 0.35rem var(--padding-side-sm);
 
@@ -174,7 +207,7 @@ textarea {
 .cart-drawer {
     position: fixed;
     top: 0.55rem;
-    right: -500px;
+    right: 1rem;
 
     z-index: 2000;
 
@@ -300,10 +333,23 @@ textarea {
 }
 
 /* **************************
+ * Cart Page
+ * ************************** */
+.cart {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* **************************
  * Main Content 
  * ************************** */
 .site-main {
     padding: var(--padding-side-sm);
+    
+    flex-grow: 0.6; /* slightly offsets from center */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 @media screen and (min-width: 700px) {
@@ -335,6 +381,10 @@ textarea {
 
 .product-pagination {
     margin: 2rem 0 0 0;
+    text-align: center;
+}
+
+.product-card {
     text-align: center;
 }
 
@@ -513,6 +563,23 @@ textarea {
 .cart-quantity-selector {
     margin-bottom: 1rem;
 }
+/* **************************
+ * Page
+ * ************************** */
+.invisible {
+    visibility: hidden;
+    display: none;
+}
+
+.page-content {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.page-content p a {
+    text-decoration: underline;
+}
+
 /* **************************
  * Page: Contact
  * ************************** */

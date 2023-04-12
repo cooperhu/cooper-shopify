@@ -17,6 +17,8 @@ barba.init({
           document.querySelectorAll('.site-navigation a').forEach(function(element) {
               element.classList.remove('active');
           });
+          gsap.to('.loading-screen', 0.25, {autoAlpha: 1, opacity: 1 });
+
           // Animate out old view
           gsap.to(data.current.container, 0.45, {
               opacity: 0,
@@ -34,6 +36,8 @@ barba.init({
               element.classList.add('active');
             }
           });
+
+          gsap.to('.loading-screen', 0.25, {autoAlpha: 0, opacity: 0 });
 
           // Fade in new content
           let page = data.next.namespace;

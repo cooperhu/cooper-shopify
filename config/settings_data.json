@@ -1,13 +1,15 @@
 {
   "current": {
     "logo": "shopify:\/\/shop_images\/logo-wear-bully.png",
-    "favicon": "shopify:\/\/shop_images\/favicon.png",
+    "favicon": "shopify:\/\/shop_images\/favicon_9dcd79d8-b780-43ac-bd27-3c04ec38710a.png",
+    "loading_icon": "shopify:\/\/shop_images\/favicon_9dcd79d8-b780-43ac-bd27-3c04ec38710a.png",
     "site_bg_color": "#fefefc",
-    "show_banner": true,
+    "show_banner": false,
     "banner_text": "✨Sitewide banner message✨",
     "banner_bg_color": "#41fc65",
     "banner_text_color": "#191919",
-    "show_search": true,
+    "show_search": false,
+    "show_buy_now": false,
     "enable_order_notes": true,
     "inline": "Sitewide sale: <strong>EASTER10<\/strong> at checkout.",
     "content_for_index": [
