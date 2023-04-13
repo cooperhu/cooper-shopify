@@ -9,12 +9,12 @@
         <h3 class="product-card__title">{{ product.title }}</h3>
     </a>
     
-    
-    {% if product.available %}
-        {% comment %} <p class="product-card__price">{{ product.price | money }}</p> {% endcomment %}
-    {% else %}
-        <p class="product-card__price">Sold Out</p>
-    {% endif %}
-    
+    {% comment %}
+        {% if product.available %}
+            <p class="product-card__price">{{ product.price | money }}</p>
+        {% else %}
+            <p class="product-card__price">Sold Out</p>
+        {% endif %}
+        {% endcomment %}
     {% comment %}<p>{{ product.description }}</p>{% endcomment %}
 </div>

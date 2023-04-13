@@ -1,14 +1,15 @@
-<div class="cart-drawer">
+<div class="cart-drawer" data-moneyformat="{{ shop.money_format }}">
     <div class="cart-drawer__header">
-        <h4 class="cart-drawer-label">Cart - <span class="js-drawer-count">{{ cart.item_count }}</span></h4>
+        <h4 class="cart-drawer-label"><a href="/cart">Cart</a> - <span class="js-drawer-count">{{ cart.item_count }}</span></h4>
         <button class="cart-drawer-close-btn js-close-cart">Close</button>
     </div>
     <div class="cart-drawer__body {% if cart.empty? %} empty {% endif %}">
         {% if cart.empty? %}
-            <h5 style="text-align: center;">Your cart is empty</h5>
+            <h4 class="cart-drawer-label empty-cart-label">Your cart is empty</h4>
         {% else %}
             {% for item in cart.items %}
-                <div class="cart-drawer-item" data-product-id="{{ item.id }}">    
+                
+                <div class="cart-drawer-item js-cart-drawer-item" data-product-id="{{ item.id }}">    
                     <div class="cart-drawer-item-img">
                         <a href="{{ item.url }}">
                             <img src="{{ item.image | image_url: width: 75}}" 
@@ -20,19 +21,29 @@
                     </div>
 
                     <div class="cart-drawer-item-info">
-                        <h4 class="cart-drawer-item-title"><a href="{{ item.url }}">{{ item.title }} (<span class="js-cart-item-quantity">{{ item.quantity }}</span>)</a></h4>
-                        <p class="cart-drawer-item-price js-cart-item-price">{{ item.final_line_price | money }}</p>
+                        <h4 class="cart-drawer-item-title">
+                            <a href="{{ item.url }}">{{ item.product.title | upcase }} x<span class="js-cart-item-quantity">{{ item.quantity }}</span></a>
+                        </h4>
+                        <p class="cart-drawer-item-price js-cart-item-price">{{ item.final_line_price | money }}</p> 
+                        {% if item.options_with_values %}
+                            <p class="cart-variant-label"> | </p>
+                            {% for variant in item.options_with_values %}
+                                <p class="cart-variant-label">{{ variant.name}}: {{variant.value}}</p>
+                            {% endfor %}
+                        {% endif %}
                     </div>
                     
-                    <!--<a class="cart-drawer-item-remove js-remove-cart-drawer-item" href="{{ item.url_to_remove }}">×</a> -->
-
+                    <div class="cart-drawer-item-remove">
+                        <a href="#" class="cart-remove-btn js-remove-cart-item" data-key="{{ item.key }}">×</a>
+                    </div>
                 </div>
             {% endfor %}
 
         {% endif %}
     </div>
     <div class="cart-drawer__footer">
-        <p class="cart-drawer-label">Total: <span class="js-cart-drawer-total">{{ cart.total_price | money }}</span></p>
-        <button type="submit" name="checkout" data-barba-prevent="self">Checkout</button>
+        <p class="cart-drawer-label">Total: <span class="js-cart-total">{{ cart.total_price | money }}</span></p>
+        <button type="submit" name="checkout" data-barba-prevent="self" class="btn">Checkout</button>
+        <a href="/cart/" class="cart-link">View Cart</a>
     </div>
 </div>

@@ -61,14 +61,13 @@
                             <fieldset>
                                 <legend>{{ option.name }}</legend>
                                 {% for value in option.values %}
-                                    
                                     <label class="option-item option-{{ option.name | downcase}}" for="{{ option.name | handlize }}-{{ value | handlize }}">
                                         <input type="radio" 
                                                 name="{{ option.name }}"
                                                 value="{{ value }}"
                                                 id="{{ option.name | handlize }}-{{ value | handlize }}"
                                                 {% if option.selected_value == value %} checked {% endif %}/>
-                                        <span class="option-square">{{ value }}</span>
+                                        <span class="checkbox">{{ value }}</span>
                                     </label>
                                     
                                     <!--
@@ -100,13 +99,15 @@
                   <button {{ disable_field }} class="quantity__btn js-add js-disable-field" type="button">+</button>
                 </div>
 
-                <button id="addToCartBtn" {{ disable_field }} type="submit" class="js-disable-field">
+                {% comment %} Add to Cart {% endcomment %}
+                <button id="addToCartBtn" {{ disable_field }} type="submit" class="add-to-cart-btn js-disable-field">
                     {% if product.selected_or_first_available_variant.available %}
                         Add to Cart
                     {% else %}
                         Sold Out
                     {% endif %}
                 </button>
+                
 
                 {% if settings.show_buy_now %}
                     <button id="buyItNowBtn" type="submit" 

@@ -5,14 +5,14 @@
     "loading_icon": "shopify:\/\/shop_images\/favicon_9dcd79d8-b780-43ac-bd27-3c04ec38710a.png",
     "site_bg_color": "#fefefc",
     "site_text_color": "#191919",
-    "show_banner": true,
+    "show_banner": false,
     "banner_text": "✨Welcome✨",
     "banner_bg_color": "#41fc65",
     "banner_text_color": "#191919",
-    "instagram": "https:\/\/www.instagram.com\/wearbully\/",
     "show_search": false,
     "show_buy_now": false,
-    "enable_order_notes": true,
+    "enable_order_notes": false,
+    "instagram": "https:\/\/www.instagram.com\/wearbully\/",
     "inline": "Sitewide sale: <strong>EASTER10<\/strong> at checkout.",
     "content_for_index": [
 

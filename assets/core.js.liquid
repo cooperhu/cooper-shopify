@@ -12,6 +12,9 @@ initNavigation();
  * Sitewide Functions
  * *********************** */
 function initNavigation() {
+  // fade in desktop nav
+  gsap.to('.site-navigation-item', {opacity: 1, y: 0, duration: 0.2, stagger: 0.1, ease: "power2.in"});
+
   const navButton = document.querySelector('.nav-button');
   const nav = document.querySelector('.site-navigation');
   const body = document.body;
@@ -30,6 +33,14 @@ function initNavigation() {
       // do ani
       gsap.to(nav, {autoAlpha: 0, duration: 0.5});
     }
+  });
+
+  // Close cart when navigating
+  const navButtons = document.querySelectorAll('.site-navigation-item a');
+  navButtons.forEach(navButton => {
+    navButton.addEventListener('click', function () {
+      closeCartDrawer();
+    });
   });
 
   // Enable sticky nav
@@ -59,15 +70,110 @@ function initCartDrawer() {
     gsap.to('.cart-drawer', 0.35, {autoAlpha: 0, opacity: 0, display: 'none'});
   });
 
-  // Removes item from cart drawer list (WIP)
+  // Close cart when navigating from within it
   const cartButtons = document.querySelectorAll('.cart-drawer-item-title a');
   cartButtons.forEach(cartButton => {
     cartButton.addEventListener('click', function () {
       closeCartDrawer();
     });
   });
+
+  // remove cart items from within cart/cart-drawer
+  document.querySelector('.cart-link').addEventListener('click', (e) => {
+    closeCartDrawer();
+  });
+
+  document.querySelectorAll('.js-remove-cart-item').forEach(remove => {
+    remove.addEventListener('click', (e) => {
+      e.preventDefault();
+      bindRemoveCartItem(remove);
+      
+      /*
+      axios.post('/cart/change.js', {
+        id: key,
+        quantity: 0
+      })
+      .then((res) => {
+        console.log(res.data);
+
+        if (res.data.items.length === 0) {
+          document.querySelector('#cart_form').remove();
+          var html = document.createElement('h4');
+          html.innerHTML = 'Your Cart is empty';
+          document.querySelector('.cart').appendChild(html);
+        } else {
+          item.remove();
+
+          // update totals
+          const totalDiscount = res.data.total_discount;
+          const totalPrice = res.data.total_price;
+          const format = document.querySelector('[data-moneyformat]').getAttribute('data-moneyformat');
+          
+          const cartTotalDiscountElement = document.querySelector('#cartTotalDiscount');
+          if (cartTotalDiscountElement) {
+            cartTotalDiscountElement.textContent = formatMoney(totalDiscount, format);
+          }
+          document.querySelector('#cartTotalPrice').textContent = formatMoney(totalPrice, format);
+          console.log('.discount',totalDiscount);
+
+          if (totalDiscount === 0) {
+            document.querySelector('#cartTotalDiscount').parentElement.classList.add('hidden');
+          }
+        }
+      });
+      */
+    });
+  });
+
+  
   //closeCartDrawer()
 };
+
+function bindRemoveCartItem(removeItem) {
+  const key = removeItem.getAttribute('data-key');
+  const cartItem = removeItem.closest('.cart-drawer-item');
+
+  // alert('trying to remove: ' + key);
+
+  axios.post('/cart/change.js', {
+    id: key,
+    quantity: 0
+  })
+  .then((res) => {
+    console.log('remove success',res.data);
+
+    // moneyFormat
+    const format = document.querySelector('[data-moneyformat]').getAttribute('data-moneyformat');
+    // const totalDiscount = res.data.total_discount;
+    // updated cart price
+    var totalPrice = formatMoney(res.data.total_price, format);
+
+    console.log('new price', totalPrice);
+
+    // update cart drawer UI
+    if (res.data.items.length === 0) {
+      // Show empty cart message
+      var emptyCartMessage = '<h4 class="cart-drawer-label empty-cart-label">Your cart is empty</h4>';
+      var cartDrawerBody = document.querySelector('.cart-drawer__body');
+      cartDrawerBody.classList.add('empty');
+      cartDrawerBody.innerHTML = emptyCartMessage;
+    } else {
+      // find item in list and remove it
+      cartItem.remove();      
+    }
+
+    // update cart count
+    document.querySelectorAll('.js-drawer-count').forEach(counter => {
+      counter.innerHTML = res.data.item_count;
+    });
+    
+    // update total cart price
+    document.querySelectorAll('.js-cart-total').forEach(total => {
+      total.innerHTML = totalPrice;
+    });
+
+  });
+}
 
 function closeCartDrawer() {
   document.querySelector('.cart-drawer').classList.remove('active');
@@ -87,8 +193,9 @@ var initSingleProduct = function() {
 
 var initCartPage = function() {
   console.log('on cart page');
-
-  bindCartControls();
+  // setup checkout btn
+  
+  // bindCartControls();
 };
 
 var initContactPage = function() {
@@ -338,7 +445,6 @@ var bindGalleryControls = function() {
     li.addEventListener('click', () => {
       document.querySelector('.sp-gallery-thumbs li.active').classList.remove('active');
       li.classList.add('active');
-
       document.querySelector('#productImage').src = li.querySelector('img').getAttribute('src');
     });
   });
@@ -370,6 +476,7 @@ var bindCartControls = function() {
     });
   });
 
+  /*
   document.querySelectorAll('.js-remove-cart-item').forEach(remove => {
     remove.addEventListener('click', (e) => {
       e.preventDefault();
@@ -401,7 +508,12 @@ var bindCartControls = function() {
           if (cartTotalDiscountElement) {
             cartTotalDiscountElement.textContent = formatMoney(totalDiscount, format);
           }
-          document.querySelector('#cartTotalPrice').textContent = formatMoney(totalPrice, format);
+          // document.querySelector('#cartTotalPrice').textContent = formatMoney(totalPrice, format);
+
+          document.querySelectorAll('.js-cart-total').forEach(total => {
+            total.innerHTML = formatMoney(totalPrice, format);
+          });
+
           console.log('.discount',totalDiscount);
 
           if (totalDiscount === 0) {
@@ -411,6 +523,7 @@ var bindCartControls = function() {
       });
     });
   });
+  */
 
   document.querySelector('[name="note"]').addEventListener('keyup', debounce((e) => {
     // console.log(e.target.value);
@@ -472,23 +585,57 @@ function updateCartUI(newitem, cartobj, exists) {
     // create the element and add it to top of cart. 
     const cartBody = document.querySelector('.cart-drawer__body');
 
-    const productTitle = newitem.variant_title ? newitem.product_title + ' - ' + newitem.variant_title : newitem.product_title;
-    const productLinePrice = formatMoney(newitem.final_line_price, format);  
+    console.log('item', newitem);
+
+    // const productTitle = newitem.variant_title ? newitem.product_title + ' - ' + newitem.variant_title : newitem.product_title;
+    const productTitle = newitem.product_title.toUpperCase();
+    const productLinePrice = formatMoney(newitem.final_line_price, format);
+    let variantMarkup = '';
+
+    if (newitem.options_with_values) {
+      variantMarkup += '<p class="cart-variant-label">|</p>';
+    }
+    newitem.options_with_values.forEach(variant => {
+      variantMarkup += `
+        <p class="cart-variant-label">${variant.name}: ${variant.value}</p>
+      `;
+    });
+
+    console.log('options',newitem.options_with_values);
+    console.log('variantMarkup', variantMarkup);
       
     let itemMarkup =  `
-      <div class="cart-drawer-item js-set-fade-in" data-product-id="${newitem.id}" style="opacity: 0;">
+      <div class="cart-drawer-item js-cart-drawer-item js-set-fade-in" data-product-id="${newitem.id}" style="opacity: 0;">
         <div class="cart-drawer-item-img">
           <a href="${newitem.url}">
             <img src="${newitem.featured_image.url}"/>
           </a>
         </div>
         <div class="cart-drawer-item-info">
-          <h4 class="cart-drawer-item-title"><a href="${newitem.url}">${productTitle} (<span class="js-cart-item-quantity">${newitem.quantity}</span>)</a></h4>
+          <h4 class="cart-drawer-item-title"><a href="${newitem.url}">${productTitle} x<span class="js-cart-item-quantity">${newitem.quantity}</span></a></h4>
           <p class="cart-drawer-item-price js-cart-item-price">${productLinePrice}</p>
+          ${variantMarkup}
+        </div>
+        <div class="cart-drawer-item-remove">
+          <a href="#" class="cart-remove-btn js-remove-cart-item" data-key="${newitem.key}">×</a>
         </div>
       </div>
     `;
 
+/*
+<div class="cart-drawer-item-info">
+                        <h4 class="cart-drawer-item-title">
+                            <a href="{{ item.url }}">{{ item.product.title }} (x<span class="js-cart-item-quantity">{{ item.quantity }})</span></a>
+                        </h4>
+                        <p class="cart-drawer-item-price js-cart-item-price">{{ item.final_line_price | money }}</p> 
+                        {% if item.options_with_values %}
+                            <p class="cart-variant-label"> | </p>
+                            {% for variant in item.options_with_values %}
+                                <p class="cart-variant-label">{{ variant.name}}: {{variant.value}}</p>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                    */
     if (document.querySelector('.cart-drawer__body').classList.contains('empty')) {
       cartBody.innerHTML = itemMarkup;
       document.querySelector('.cart-drawer__body').classList.remove('empty')
@@ -498,22 +645,73 @@ function updateCartUI(newitem, cartobj, exists) {
     }
 
     gsap.to('.js-set-fade-in', 0.6, {opacity: 1, delay: 0.1});
+
+    // bind removeCartFunction
+    document.querySelectorAll('.js-remove-cart-item').forEach(remove => {
+      remove.addEventListener('click', (e) => {
+        e.preventDefault();
+        bindRemoveCartItem(remove);
+      });
+    });
   }
   
-  // update total price
-  document.querySelector('.js-cart-drawer-total').innerHTML = totalPrice;
+  // update total cart price
+  document.querySelectorAll('.js-cart-total').forEach(total => {
+    total.innerHTML = totalPrice;
+  });
   
   // open drawer if it's not already open
   const cartEl = document.querySelector('.cart-drawer');
   
   if (!cartEl.classList.contains('active')) {
-    console.log('working');
     cartEl.classList.add('active');
     gsap.to('.cart-drawer', 0.35, {autoAlpha: 1, opacity: 1, display: 'flex' });
-  } else {
-    console.log('why');
   }
 }
+
+/*
+document.querySelectorAll('.js-remove-cart-item').forEach(remove => {
+    remove.addEventListener('click', (e) => {
+      e.preventDefault();
+
+      const item = remove.closest('.cart-item');
+      const key = item.getAttribute('data-key')
+
+      axios.post('/cart/change.js', {
+        id: key,
+        quantity: 0
+      })
+      .then((res) => {
+        console.log(res.data);
+
+        if (res.data.items.length === 0) {
+          document.querySelector('#cart_form').remove();
+          var html = document.createElement('h4');
+          html.innerHTML = 'Your Cart is empty';
+          document.querySelector('.cart').appendChild(html);
+        } else {
+          item.remove();
+
+          // update totals
+          const totalDiscount = res.data.total_discount;
+          const totalPrice = res.data.total_price;
+          const format = document.querySelector('[data-moneyformat]').getAttribute('data-moneyformat');
+          
+          const cartTotalDiscountElement = document.querySelector('#cartTotalDiscount');
+          if (cartTotalDiscountElement) {
+            cartTotalDiscountElement.textContent = formatMoney(totalDiscount, format);
+          }
+          document.querySelector('#cartTotalPrice').textContent = formatMoney(totalPrice, format);
+          console.log('.discount',totalDiscount);
+
+          if (totalDiscount === 0) {
+            document.querySelector('#cartTotalDiscount').parentElement.classList.add('hidden');
+          }
+        }
+      });
+    });
+  });
+  */
 
 
 /* ********************************

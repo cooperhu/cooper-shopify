@@ -1,61 +1,74 @@
 
-<div class="cart">
-    <h1>Cart</h1>
-
+<div class="cart-wrapper">
     {% form 'cart', cart %}
         {% if cart.empty? %}
-            <h4>Your Cart is empty</h4>
+            <h4 class="cart-label empty-cart-label">Your Cart is empty</h4>
         {% else %}
-            <div class="cart-wrapper" data-moneyformat="{{ shop.money_format }}">
-                {% for item in cart.items %}
-                    <div class="cart-item" data-key="{{ item.key }}">
-                        <div class="cart-item__img">
-                            <a href="{{ item.url }}">
-                                <img src="{{ item.image | image_url: width: 200}}"/>
-                            </a>
-                        </div>
-                        <div class="cart-item__content">
-                            <h2 class="cart-title"><a href="{{ item.url }}">{{ item.title }}</a></h2>
-                            <p class="cart-price">
-                                {{ item.final_line_price | money }}
-                                
-                            </p>
-                            {% if item.total_discount > 0 %}
-                                <span class="cart-price discount-tag">{{ item.total_discount | money }} off</span>
-                            {% endif %}
+            <div class="cart" data-moneyformat="{{ shop.money_format }}">
+                <div class="cart__header">
+                    <h1 class="cart-label">Cart: <span class="js-drawer-count">{{ cart.item_count }}</span></h1>
+                </div>
+                <div class="cart__body">
+                    {% for item in cart.items %}
 
-                            {% comment %} Quantity {% endcomment %}
-                            <div class="cart-quantity-sector">
-                              <button class="quantity__btn js-minus" type="button">-</button>
-                              <input  class="quantity__input" id="quantity" name="updates[]" value="{{ item.quantity }}" min="1" max="100" />
-                              <button class="quantity__btn js-plus" type="button">+</button>
+                        <div class="cart-item" data-key="{{ item.key }}">
+                            <div class="cart-item__img">
+                                <a href="{{ item.url }}">
+                                    <img src="{{ item.image | image_url: width: 200}}"/>
+                                </a>
                             </div>
+                            <div class="cart-item__content">
 
-                            <a class="js-remove-cart-item" href="{{ item.url_to_remove }}">Remove from Cart</a>
+                                <h2 class="cart-title"><a href="{{ item.url }}">{{ item.product.title | upcase }} x<span class="js-cart-item-quantity">{{ item.quantity }}</span></a></h2>
+                                
+                                <div>
+                                    <p class="cart-drawer-item-price js-cart-item-price">{{ item.final_line_price | money }}</p> 
+                                    {% if item.total_discount > 0 %}
+                                        <span class="cart-drawer-item-price discount-tag">{{ item.total_discount | money }} off</span>
+                                    {% endif %}
+
+                                    {% if item.options_with_values %}
+                                        <p class="cart-variant-label"> | </p>
+                                        {% for variant in item.options_with_values %}
+                                            <p class="cart-variant-label">{{ variant.name}}: {{variant.value}}</p>
+                                        {% endfor %}
+                                    {% endif %}
+                                </div>
+                                
+                                {% comment %} Quantity {% endcomment %}
+                                <div class="cart-quantity-sector">
+                                  <button class="quantity__btn js-minus" type="button">-</button>
+                                  <input  class="quantity__input" id="quantity" name="updates[]" value="{{ item.quantity }}" min="1" max="100" />
+                                  <button class="quantity__btn js-plus" type="button">+</button>
+                                </div>
+
+                                <a class="cart-label cart-remove-item js-remove-cart-item" href="{{ item.url_to_remove }}">Remove from Cart</a>
+                            </div>
                         </div>
-                    </div>
-                {% endfor %}
-
-                <hr/>
-
-                {% if settings.enable_order_notes %}
-                    <div class="cart-note">
-                        <textarea name="note" placeholder="Add special instructions">{{ cart.note }}</textarea>
-                    </div>
-                {% endif %}
-
-                {% comment %}
-                    Implement Order Note: https://youtu.be/Ap_csCnTSA4?t=1254
-                {% endcomment %}
-                <div class="cart-totals">
-                    {% unless cart.total_discounts == 0 %}
-                        <p>Discounts: <span id="cartTotalDiscount">{{ cart.total_discounts | money }}</span></p>
-                    {% endunless %}
-
-                    <p>Total: <span id="cartTotalPrice">{{ cart.total_price | money }}</span></p>
+                    {% endfor %}
                 </div>
 
-                <button type="submit" name="checkout">Checkout</button>
+                <div class="cart__footer">
+
+                    {% if settings.enable_order_notes %}
+                        <div class="cart-note">
+                            <textarea name="note" placeholder="Add special instructions">{{ cart.note }}</textarea>
+                        </div>
+                    {% endif %}
+
+                    {% comment %}
+                        Implement Order Note: https://youtu.be/Ap_csCnTSA4?t=1254
+                    {% endcomment %}
+                    <div class="cart-totals">
+                        {% unless cart.total_discounts == 0 %}
+                            <p class="cart-label">Discounts: <span id="cartTotalDiscount">{{ cart.total_discounts | money }}</span></p>
+                        {% endunless %}
+
+                        <p class="cart-label">Total: <span class="js-cart-total">{{ cart.total_price | money }}</span></p>
+                    </div>
+                    <br/>
+                    <button class="btn" type="submit" name="checkout">Checkout</button>
+                </div>
             </div>
         {% endif %}
     {% endform %}
