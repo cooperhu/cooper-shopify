@@ -1,6 +1,6 @@
 <div class="cart-drawer" data-moneyformat="{{ shop.money_format }}">
     <div class="cart-drawer__header">
-        <h4 class="cart-drawer-label"><a href="/cart">Cart</a> - <span class="js-drawer-count">{{ cart.item_count }}</span></h4>
+        <h4 class="cart-drawer-label"><a href="/cart">Cart</a>: <span class="js-drawer-count">{{ cart.item_count }}</span></h4>
         <button class="cart-drawer-close-btn js-close-cart">Close</button>
     </div>
     <div class="cart-drawer__body {% if cart.empty? %} empty {% endif %}">
@@ -9,7 +9,7 @@
         {% else %}
             {% for item in cart.items %}
                 
-                <div class="cart-drawer-item js-cart-drawer-item" data-product-id="{{ item.id }}">    
+                <div class="cart-drawer-item js-cart-item" data-product-id="{{ item.id }}" data-key="{{ item.key }}">    
                     <div class="cart-drawer-item-img">
                         <a href="{{ item.url }}">
                             <img src="{{ item.image | image_url: width: 75}}" 

@@ -1,6 +1,6 @@
 
 <div class="cart-wrapper">
-    {% form 'cart', cart %}
+    
         {% if cart.empty? %}
             <h4 class="cart-label empty-cart-label">Your Cart is empty</h4>
         {% else %}
@@ -11,7 +11,7 @@
                 <div class="cart__body">
                     {% for item in cart.items %}
 
-                        <div class="cart-item" data-key="{{ item.key }}">
+                        <div class="cart-item js-cart-item" data-key="{{ item.key }}">
                             <div class="cart-item__img">
                                 <a href="{{ item.url }}">
                                     <img src="{{ item.image | image_url: width: 200}}"/>
@@ -42,7 +42,7 @@
                                   <button class="quantity__btn js-plus" type="button">+</button>
                                 </div>
 
-                                <a class="cart-label cart-remove-item js-remove-cart-item" href="{{ item.url_to_remove }}">Remove from Cart</a>
+                                <a class="cart-label cart-remove-item js-remove-cart-item" href="#" data-key="{{ item.key }}">Remove from Cart</a>
                             </div>
                         </div>
                     {% endfor %}
@@ -71,6 +71,6 @@
                 </div>
             </div>
         {% endif %}
-    {% endform %}
+   {% comment %} {% form 'cart', cart %} {% endform %} {% endcomment %}
 
 </div>

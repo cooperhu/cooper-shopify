@@ -157,9 +157,14 @@ function bindRemoveCartItem(removeItem) {
       var cartDrawerBody = document.querySelector('.cart-drawer__body');
       cartDrawerBody.classList.add('empty');
       cartDrawerBody.innerHTML = emptyCartMessage;
+
+      document.querySelector('.cart-wrapper').innerHTML = '<h4 class="cart-label empty-cart-label">Your Cart is empty</h4>';
     } else {
-      // find item in list and remove it
-      cartItem.remove();      
+      // find cart items and remove them
+      console.log(document.querySelectorAll('[data-key="'+key+'"]'));
+      document.querySelectorAll('.js-cart-item[data-key="'+key+'"]').forEach(item => {
+        item.remove(); 
+      });
     }
 
     // update cart count
@@ -193,9 +198,8 @@ var initSingleProduct = function() {
 
 var initCartPage = function() {
   console.log('on cart page');
-  // setup checkout btn
-  
-  // bindCartControls();
+  // setup cart form.
+  bindCartPageControls();
 };
 
 var initContactPage = function() {
@@ -452,18 +456,24 @@ var bindGalleryControls = function() {
 
 
 /* Cart Functions */ 
-var bindCartControls = function() {
-  // cart-quantity-sector
-  document.querySelectorAll('.cart-quantity-sector button').forEach(button => {
-    button.addEventListener('click', (e) => {
-      e.preventDefault(); // weird bug removes the item from cart when you interact with default
+function bindCartPageControls() {
+  console.log('bindcartpagecontrols');
+  
+  document.querySelectorAll('.js-remove-cart-item').forEach(remove => {
+    remove.addEventListener('click', (e) => {
+      e.preventDefault();
+      bindRemoveCartItem(remove);
+    });
+  });
 
+  document.querySelectorAll('.cart-quantity-sector .quantity__btn').forEach(button => {
+    button.addEventListener('click', (e) => {
+      e.preventDefault();
       const input = button.parentElement.querySelector('input');
       const value = Number(input.value);
       const isPlus = button.classList.contains('js-plus');
       const key = button.closest('.cart-item').getAttribute('data-key');
       
-      console.log('key', key);
       if (isPlus) {
         const newValue = value + 1;
         input.value = newValue;
@@ -475,6 +485,24 @@ var bindCartControls = function() {
       }
     });
   });
+
+  document.querySelector('[name="note"]').addEventListener('keyup', debounce((e) => {
+    // console.log(e.target.value);
+    axios.post('/cart/update.js', {
+      note: e.target.value,
+    });
+  }, 500));
+
+  
+  document.querySelectorAll('.js-remove-cart-item').forEach(remove => {
+    remove.addEventListener('click', (e) => {
+      e.preventDefault();
+
+      console.log('testing');
+      bindRemoveCartItem(remove);
+    });
+  });
+}
 
   /*
   document.querySelectorAll('.js-remove-cart-item').forEach(remove => {
@@ -525,13 +553,6 @@ var bindCartControls = function() {
   });
   */
 
-  document.querySelector('[name="note"]').addEventListener('keyup', debounce((e) => {
-    // console.log(e.target.value);
-    axios.post('/cart/update.js', {
-      note: e.target.value,
-    });
-  }, 500));
-}
 
 function changeItemQuantity(key, quantity) {
   // console.log(quantity, key);
@@ -546,14 +567,51 @@ function changeItemQuantity(key, quantity) {
     const item = res.data.items.find(item => item.key === key);
     const itemPrice = item.final_line_price;
     const format = document.querySelector('[data-moneyformat]').getAttribute('data-moneyformat');
+   
+    /*
     const cartTotalDiscountElement = document.querySelector('#cartTotalDiscount');
+    
     if (cartTotalDiscountElement) {
       cartTotalDiscountElement.textContent = formatMoney(totalDiscount, format);
-    }
+    }*/
 
+    // update total cart count
+    document.querySelectorAll('.js-drawer-count').forEach(counter => {
+      counter.innerHTML = res.data.item_count;
+    });
+
+    // update cart total price
+    document.querySelectorAll('.js-cart-total').forEach(total => {
+      total.innerHTML = formatMoney(totalPrice, format);
+    });
+
+    // update line items
+    document.querySelectorAll('[data-key="'+key+'"] .js-cart-item-price').forEach(price => {
+      price.textContent = formatMoney(itemPrice, format);
+    });
+
+    // update line quantity 
+    document.querySelectorAll('[data-key="'+key+'"] .js-cart-item-quantity').forEach(quantity => {
+      quantity.textContent = item.quantity;
+    });
+    
+
+    // update line item in cart and in drawer
+    // js-cart-item-quantity
+
+    // .cart-item
+
+    // document.querySelectorAll('.js-drawer-count')
+    // document.querySelector('[data-key="'+key+'"] .cart-price').textContent = formatMoney(itemPrice, format);
+
+    // update line item price
+    // js-cart-item-price
+
+    /*
     document.querySelector('.js-drawer-count').textContent = res.data.item_count;
     document.querySelector('#cartTotalPrice').textContent = formatMoney(totalPrice, format);
     document.querySelector('[data-key="'+key+'"] .cart-price').textContent = formatMoney(itemPrice, format);
+    */
   });
 }
 
@@ -605,7 +663,7 @@ function updateCartUI(newitem, cartobj, exists) {
     console.log('variantMarkup', variantMarkup);
       
     let itemMarkup =  `
-      <div class="cart-drawer-item js-cart-drawer-item js-set-fade-in" data-product-id="${newitem.id}" style="opacity: 0;">
+      <div class="cart-drawer-item js-cart-item js-set-fade-in" data-product-id="${newitem.id}" data-key="${newitem.key}" style="opacity: 0;">
         <div class="cart-drawer-item-img">
           <a href="${newitem.url}">
             <img src="${newitem.featured_image.url}"/>
@@ -622,20 +680,6 @@ function updateCartUI(newitem, cartobj, exists) {
       </div>
     `;
 
-/*
-<div class="cart-drawer-item-info">
-                        <h4 class="cart-drawer-item-title">
-                            <a href="{{ item.url }}">{{ item.product.title }} (x<span class="js-cart-item-quantity">{{ item.quantity }})</span></a>
-                        </h4>
-                        <p class="cart-drawer-item-price js-cart-item-price">{{ item.final_line_price | money }}</p> 
-                        {% if item.options_with_values %}
-                            <p class="cart-variant-label"> | </p>
-                            {% for variant in item.options_with_values %}
-                                <p class="cart-variant-label">{{ variant.name}}: {{variant.value}}</p>
-                            {% endfor %}
-                        {% endif %}
-                    </div>
-                    */
     if (document.querySelector('.cart-drawer__body').classList.contains('empty')) {
       cartBody.innerHTML = itemMarkup;
       document.querySelector('.cart-drawer__body').classList.remove('empty')
