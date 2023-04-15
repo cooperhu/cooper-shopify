@@ -5,8 +5,8 @@
  *   so be sure to add any new functionality to both files
  * ********************************************************* */
 // Sitewide Init Functions
-initCartDrawer();
 initNavigation();
+initCartDrawer();
 
 /* ***********************
  * Sitewide Functions
@@ -79,111 +79,21 @@ function initCartDrawer() {
   });
 
   // remove cart items from within cart/cart-drawer
-  document.querySelector('.cart-link').addEventListener('click', (e) => {
-    closeCartDrawer();
+  document.querySelectorAll('.js-close-cart').forEach(cartButton => {
+    cartButton.addEventListener('click', (e) => {
+      closeCartDrawer();
+    });
   });
 
   document.querySelectorAll('.js-remove-cart-item').forEach(remove => {
+    console.log('hellowolrd');
     remove.addEventListener('click', (e) => {
       e.preventDefault();
       bindRemoveCartItem(remove);
-      
-      /*
-      axios.post('/cart/change.js', {
-        id: key,
-        quantity: 0
-      })
-      .then((res) => {
-        console.log(res.data);
-
-        if (res.data.items.length === 0) {
-          document.querySelector('#cart_form').remove();
-          var html = document.createElement('h4');
-          html.innerHTML = 'Your Cart is empty';
-          document.querySelector('.cart').appendChild(html);
-        } else {
-          item.remove();
-
-          // update totals
-          const totalDiscount = res.data.total_discount;
-          const totalPrice = res.data.total_price;
-          const format = document.querySelector('[data-moneyformat]').getAttribute('data-moneyformat');
-          
-          const cartTotalDiscountElement = document.querySelector('#cartTotalDiscount');
-          if (cartTotalDiscountElement) {
-            cartTotalDiscountElement.textContent = formatMoney(totalDiscount, format);
-          }
-          document.querySelector('#cartTotalPrice').textContent = formatMoney(totalPrice, format);
-          console.log('.discount',totalDiscount);
-
-          if (totalDiscount === 0) {
-            document.querySelector('#cartTotalDiscount').parentElement.classList.add('hidden');
-          }
-        }
-      });
-      */
     });
   });
-
-  
-  //closeCartDrawer()
 };
 
-function bindRemoveCartItem(removeItem) {
-  const key = removeItem.getAttribute('data-key');
-  const cartItem = removeItem.closest('.cart-drawer-item');
-
-  // alert('trying to remove: ' + key);
-
-  axios.post('/cart/change.js', {
-    id: key,
-    quantity: 0
-  })
-  .then((res) => {
-    console.log('remove success',res.data);
-
-    // moneyFormat
-    const format = document.querySelector('[data-moneyformat]').getAttribute('data-moneyformat');
-    // const totalDiscount = res.data.total_discount;
-    // updated cart price
-    var totalPrice = formatMoney(res.data.total_price, format);
-
-    console.log('new price', totalPrice);
-
-    // update cart drawer UI
-    if (res.data.items.length === 0) {
-      // Show empty cart message
-      var emptyCartMessage = '<h4 class="cart-drawer-label empty-cart-label">Your cart is empty</h4>';
-      var cartDrawerBody = document.querySelector('.cart-drawer__body');
-      cartDrawerBody.classList.add('empty');
-      cartDrawerBody.innerHTML = emptyCartMessage;
-
-      document.querySelector('.cart-wrapper').innerHTML = '<h4 class="cart-label empty-cart-label">Your Cart is empty</h4>';
-    } else {
-      // find cart items and remove them
-      console.log(document.querySelectorAll('[data-key="'+key+'"]'));
-      document.querySelectorAll('.js-cart-item[data-key="'+key+'"]').forEach(item => {
-        item.remove(); 
-      });
-    }
-
-    // update cart count
-    document.querySelectorAll('.js-drawer-count').forEach(counter => {
-      counter.innerHTML = res.data.item_count;
-    });
-    
-    // update total cart price
-    document.querySelectorAll('.js-cart-total').forEach(total => {
-      total.innerHTML = totalPrice;
-    });
-
-  });
-}
-
-function closeCartDrawer() {
-  document.querySelector('.cart-drawer').classList.remove('active');
-  gsap.to('.cart-drawer', 0.35, {autoAlpha: 0, opacity: 0, display: 'none'});
-}
 
 // Allows WP Links to operate normally
 // document.querySelectorAll("#wpadminbar a").forEach(item=>item.setAttribute('data-barba-prevent','self'));
@@ -237,6 +147,7 @@ var initCollectionPage = function() {
 /* ********************************
  * Single Purpose Functions
  * ******************************** */
+
 /* Single Product Page Functions */
 function initProductForm() {
   // update variant UI 
@@ -271,35 +182,7 @@ function initProductGallery() {
   const lightbox = new PhotoSwipeLightbox(options);
 
   lightbox.init();
-
-  // Bind thumbnails 
-  /*
-  document.querySelector('#productImage').addEventListener('click', () => {
-    // go to slide by index
-    let index = document.querySelector('#productImage').getAttribute('data-index');
-    lightbox.loadAndOpen(index);
-  });
-
-  document.querySelectorAll('.sp-gallery-thumbs li a').forEach(anchor => {
-    anchor.addEventListener('click', (e) => {
-      alert('hi4');
-      e.preventDefault();
-    });
-  });
-
-  // Bind thumbnails
-  document.querySelectorAll('.sp-gallery-thumbs li').forEach(li => {
-    li.addEventListener('click', () => {
-      document.querySelector('.sp-gallery-thumbs li.active').classList.remove('active');
-      li.classList.add('active');
-      
-      document.querySelector('#productImage').src = li.querySelector('img').getAttribute('src');
-      document.querySelector('#productImage').dataset.index = li.getAttribute('data-index');
-    
-    });
-  });*/
 }
-
 
 function bindQuantityCount() {
     console.log('bindQuantityCount');
@@ -351,7 +234,7 @@ function bindVariantOptions() {
           return pass;
         })
 
-        console.log('new product', matchedVariant);
+        // console.log('new product', matchedVariant);
 
         // change hidden input
         document.querySelector('#productId').value = matchedVariant.id;
@@ -493,13 +376,77 @@ function addToCart() {
       }
       // enable buttons/allow resubmission
       disableProductFormField(false);
+
+      if (document.querySelector('.cart-drawer__footer').classList.contains('hidden')) {
+        document.querySelector('.cart-drawer__footer').classList.remove('hidden');
+      }
     });
   });
 }
 
 /* Cart Functions */ 
+
+/* Cart Drawer Functions */
+function bindRemoveCartItem(removeItem) {
+  const key = removeItem.getAttribute('data-key');
+  const cartItem = removeItem.closest('.cart-drawer-item');
+
+  axios.post('/cart/change.js', {
+    id: key,
+    quantity: 0
+  })
+  .then((res) => {
+    // moneyFormat
+    const format = document.querySelector('[data-moneyformat]').getAttribute('data-moneyformat');
+    // const totalDiscount = res.data.total_discount;
+    
+    // updated cart price
+    var totalPrice = formatMoney(res.data.total_price, format);
+
+    // update cart drawer UI
+    if (res.data.items.length === 0) {
+      // Show empty cart message
+      var emptyCartMessage = '<h4 class="cart-drawer-label empty-cart-label">Your cart is empty</h4>';
+      var cartDrawerBody = document.querySelector('.cart-drawer__body');
+      cartDrawerBody.classList.add('empty');
+      cartDrawerBody.innerHTML = emptyCartMessage;
+
+      // hide cart drawer footer
+      document.querySelector('.cart-drawer__footer').classList.add('hidden');
+
+      // update cart page if on cart
+      if (document.querySelector('.cart-wrapper')) {
+        document.querySelector('.cart-wrapper').innerHTML = '<h4 class="cart-label empty-cart-label">Your Cart is empty</h4>';
+      }
+
+    } else {
+      // find cart items and remove them
+      console.log(document.querySelectorAll('[data-key="'+key+'"]'));
+      document.querySelectorAll('.js-cart-item[data-key="'+key+'"]').forEach(item => {
+        item.remove(); 
+      });
+    }
+
+    // update cart count
+    document.querySelectorAll('.js-cart-count').forEach(counter => {
+      counter.innerHTML = res.data.item_count;
+    });
+    
+    // update total cart price
+    document.querySelectorAll('.js-cart-total').forEach(total => {
+      total.innerHTML = totalPrice;
+    });
+
+  });
+}
+
+function closeCartDrawer() {
+  document.querySelector('.cart-drawer').classList.remove('active');
+  gsap.to('.cart-drawer', 0.35, {autoAlpha: 0, opacity: 0, display: 'none'});
+}
+
 function bindCartPageControls() {
-  console.log('bindcartpagecontrols');
+  //console.log('bindcartpagecontrols');
   
   document.querySelectorAll('.js-remove-cart-item').forEach(remove => {
     remove.addEventListener('click', (e) => {
@@ -534,67 +481,7 @@ function bindCartPageControls() {
       note: e.target.value,
     });
   }, 500));
-
-  
-  document.querySelectorAll('.js-remove-cart-item').forEach(remove => {
-    remove.addEventListener('click', (e) => {
-      e.preventDefault();
-
-      console.log('testing');
-      bindRemoveCartItem(remove);
-    });
-  });
 }
-
-  /*
-  document.querySelectorAll('.js-remove-cart-item').forEach(remove => {
-    remove.addEventListener('click', (e) => {
-      e.preventDefault();
-
-      const item = remove.closest('.cart-item');
-      const key = item.getAttribute('data-key')
-
-      axios.post('/cart/change.js', {
-        id: key,
-        quantity: 0
-      })
-      .then((res) => {
-        console.log(res.data);
-
-        if (res.data.items.length === 0) {
-          document.querySelector('#cart_form').remove();
-          var html = document.createElement('h4');
-          html.innerHTML = 'Your Cart is empty';
-          document.querySelector('.cart').appendChild(html);
-        } else {
-          item.remove();
-
-          // update totals
-          const totalDiscount = res.data.total_discount;
-          const totalPrice = res.data.total_price;
-          const format = document.querySelector('[data-moneyformat]').getAttribute('data-moneyformat');
-          
-          const cartTotalDiscountElement = document.querySelector('#cartTotalDiscount');
-          if (cartTotalDiscountElement) {
-            cartTotalDiscountElement.textContent = formatMoney(totalDiscount, format);
-          }
-          // document.querySelector('#cartTotalPrice').textContent = formatMoney(totalPrice, format);
-
-          document.querySelectorAll('.js-cart-total').forEach(total => {
-            total.innerHTML = formatMoney(totalPrice, format);
-          });
-
-          console.log('.discount',totalDiscount);
-
-          if (totalDiscount === 0) {
-            document.querySelector('#cartTotalDiscount').parentElement.classList.add('hidden');
-          }
-        }
-      });
-    });
-  });
-  */
-
 
 function changeItemQuantity(key, quantity) {
   // console.log(quantity, key);
@@ -609,16 +496,9 @@ function changeItemQuantity(key, quantity) {
     const item = res.data.items.find(item => item.key === key);
     const itemPrice = item.final_line_price;
     const format = document.querySelector('[data-moneyformat]').getAttribute('data-moneyformat');
-   
-    /*
-    const cartTotalDiscountElement = document.querySelector('#cartTotalDiscount');
-    
-    if (cartTotalDiscountElement) {
-      cartTotalDiscountElement.textContent = formatMoney(totalDiscount, format);
-    }*/
 
     // update total cart count
-    document.querySelectorAll('.js-drawer-count').forEach(counter => {
+    document.querySelectorAll('.js-cart-count').forEach(counter => {
       counter.innerHTML = res.data.item_count;
     });
 
@@ -636,24 +516,6 @@ function changeItemQuantity(key, quantity) {
     document.querySelectorAll('[data-key="'+key+'"] .js-cart-item-quantity').forEach(quantity => {
       quantity.textContent = item.quantity;
     });
-    
-
-    // update line item in cart and in drawer
-    // js-cart-item-quantity
-
-    // .cart-item
-
-    // document.querySelectorAll('.js-drawer-count')
-    // document.querySelector('[data-key="'+key+'"] .cart-price').textContent = formatMoney(itemPrice, format);
-
-    // update line item price
-    // js-cart-item-price
-
-    /*
-    document.querySelector('.js-drawer-count').textContent = res.data.item_count;
-    document.querySelector('#cartTotalPrice').textContent = formatMoney(totalPrice, format);
-    document.querySelector('[data-key="'+key+'"] .cart-price').textContent = formatMoney(itemPrice, format);
-    */
   });
 }
 
@@ -667,7 +529,7 @@ function updateCartUI(newitem, cartobj, exists) {
   // updated cart price
   var totalPrice = formatMoney(cartobj.total_price, format);
   // update cart count
-  document.querySelectorAll('.js-drawer-count').forEach(counter => {
+  document.querySelectorAll('.js-cart-count').forEach(counter => {
     counter.innerHTML = cartobj.item_count;
   });
 
@@ -754,51 +616,6 @@ function updateCartUI(newitem, cartobj, exists) {
     gsap.to('.cart-drawer', 0.35, {autoAlpha: 1, opacity: 1, display: 'flex' });
   }
 }
-
-/*
-document.querySelectorAll('.js-remove-cart-item').forEach(remove => {
-    remove.addEventListener('click', (e) => {
-      e.preventDefault();
-
-      const item = remove.closest('.cart-item');
-      const key = item.getAttribute('data-key')
-
-      axios.post('/cart/change.js', {
-        id: key,
-        quantity: 0
-      })
-      .then((res) => {
-        console.log(res.data);
-
-        if (res.data.items.length === 0) {
-          document.querySelector('#cart_form').remove();
-          var html = document.createElement('h4');
-          html.innerHTML = 'Your Cart is empty';
-          document.querySelector('.cart').appendChild(html);
-        } else {
-          item.remove();
-
-          // update totals
-          const totalDiscount = res.data.total_discount;
-          const totalPrice = res.data.total_price;
-          const format = document.querySelector('[data-moneyformat]').getAttribute('data-moneyformat');
-          
-          const cartTotalDiscountElement = document.querySelector('#cartTotalDiscount');
-          if (cartTotalDiscountElement) {
-            cartTotalDiscountElement.textContent = formatMoney(totalDiscount, format);
-          }
-          document.querySelector('#cartTotalPrice').textContent = formatMoney(totalPrice, format);
-          console.log('.discount',totalDiscount);
-
-          if (totalDiscount === 0) {
-            document.querySelector('#cartTotalDiscount').parentElement.classList.add('hidden');
-          }
-        }
-      });
-    });
-  });
-  */
-
 
 /* ********************************
  * Utility Functions

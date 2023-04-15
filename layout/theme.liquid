@@ -35,7 +35,6 @@ shopify starter theme by connor hubeny - connorhubeny.com -->
 
     {{ 'photoswipe.css' | asset_url | stylesheet_tag }}
     {{ 'glide.min.css' | asset_url | stylesheet_tag }}
-    {{ 'slick.css' | asset_url | stylesheet_tag }}
     {{ 'main.css' | asset_url | stylesheet_tag }}
 
     <style> 
@@ -64,6 +63,7 @@ shopify starter theme by connor hubeny - connorhubeny.com -->
 
     {{ 'modernizr-custom.js' | asset_url | script_tag }}
     {{ 'axios.min.js'  | asset_url | script_tag }}
+    
     {{ 'url-parse.min.js' | asset_url | script_tag }}
     {{ 'barba.min.js' | asset_url | script_tag }}
 
@@ -75,17 +75,9 @@ shopify starter theme by connor hubeny - connorhubeny.com -->
     {{ 'photoswipe-lightbox.umd.min.js' | asset_url | script_tag }}
     {{ 'photoswipe.umd.min.js' | asset_url | script_tag }}
 
-    
-    <!--
-    <script type="module" src="{{ 'photoswipe-lightbox.esm.min.js' | asset_url }}"></script>
-    -->
-    <!--
-    <script type="module" src="{{ 'photoswipe.esm.min.js' | asset_url }}"></script>
-    -->
     {{ 'locomotive-scroll.min.js' | asset_url | script_tag }}
     {{ 'jquery.min.js' | asset_url | script_tag }}
-    {{ 'slick.min.js' | asset_url | script_tag }}
-
+    
     {{ 'core.js' | asset_url | script_tag }}
 
     {% comment %}

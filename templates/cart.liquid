@@ -6,7 +6,7 @@
         {% else %}
             <div class="cart" data-moneyformat="{{ shop.money_format }}">
                 <div class="cart__header">
-                    <h1 class="cart-label">Cart: <span class="js-drawer-count">{{ cart.item_count }}</span></h1>
+                    <h1 class="cart-label">Cart: <span class="js-cart-count">{{ cart.item_count }}</span></h1>
                 </div>
                 <div class="cart__body">
                     {% for item in cart.items %}
@@ -57,19 +57,24 @@
                     {% endif %}
 
                     {% comment %}
+                        {% form 'cart', cart %} 
+                            <p>Actual Form</p>
+                        {% endform %}
                         Implement Order Note: https://youtu.be/Ap_csCnTSA4?t=1254
-                    {% endcomment %}
-                    <div class="cart-totals">
                         {% unless cart.total_discounts == 0 %}
                             <p class="cart-label">Discounts: <span id="cartTotalDiscount">{{ cart.total_discounts | money }}</span></p>
                         {% endunless %}
-
-                        <p class="cart-label">Total: <span class="js-cart-total">{{ cart.total_price | money }}</span></p>
+                    {% endcomment %}
+                    <div class="cart-totals">
+                        <p class="cart-label">Subtotal: <span class="js-cart-total">{{ cart.total_price | money }}</span></p>
                     </div>
                     <br/>
-                    <button class="btn" type="submit" name="checkout">Checkout</button>
+                    {% form 'cart', cart %} 
+                        <button class="js-checkout btn" type="submit" name="checkout">Checkout</button>
+                    {% endform %}
                 </div>
             </div>
+            
         {% endif %}
    {% comment %} {% form 'cart', cart %} {% endform %} {% endcomment %}
 

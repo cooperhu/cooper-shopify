@@ -11,7 +11,7 @@
         {% comment %}<h1>{{ shop.name }}</h1>{% endcomment %}
         
         {%- if settings.logo != blank -%}
-            <a class="site-logo" href="/">
+            <a class="site-logo js-close-cart" href="/">
               {{ settings.logo | image_url: width: 500 | image_tag:
                 height: settings.logo.height,
                 width: settings.logo.width,
@@ -51,5 +51,5 @@
         </form>
     {% endif %}
 
-    <button class="cart-drawer-button js-open-cart">Cart: <span class="cart-drawer-button-count js-drawer-count">{{ cart.item_count }}</span></button>
+    <button class="cart-drawer-button js-open-cart">Cart: <span class="cart-drawer-button-count js-cart-count">{{ cart.item_count }}</span></button>
 </header>

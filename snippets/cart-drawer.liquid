@@ -1,6 +1,6 @@
 <div class="cart-drawer" data-moneyformat="{{ shop.money_format }}">
     <div class="cart-drawer__header">
-        <h4 class="cart-drawer-label"><a href="/cart">Cart</a>: <span class="js-drawer-count">{{ cart.item_count }}</span></h4>
+        <h4 class="cart-drawer-label"><a href="/cart" class="js-close-cart">Cart</a>: <span class="js-cart-count">{{ cart.item_count }}</span></h4>
         <button class="cart-drawer-close-btn js-close-cart">Close</button>
     </div>
     <div class="cart-drawer__body {% if cart.empty? %} empty {% endif %}">
@@ -41,9 +41,14 @@
 
         {% endif %}
     </div>
-    <div class="cart-drawer__footer">
-        <p class="cart-drawer-label">Total: <span class="js-cart-total">{{ cart.total_price | money }}</span></p>
-        <button type="submit" name="checkout" data-barba-prevent="self" class="btn">Checkout</button>
-        <a href="/cart/" class="cart-link">View Cart</a>
+    <div class="cart-drawer__footer {% if cart.empty? %}hidden{% endif %}">
+        <p class="cart-drawer-label cart-drawer-subtotal">Subtotal: <span class="js-cart-total">{{ cart.total_price | money }}</span></p>
+        <div class="cart-drawer-checkout">
+            {% form 'cart', cart %} 
+                <button type="submit" name="checkout" data-barba-prevent="self" class="js-checkout btn">Checkout</button>
+            {% endform %}
+        </div>
+        
+        <a href="/cart/" class="cart-link js-close-cart">View Cart</a>
     </div>
 </div>

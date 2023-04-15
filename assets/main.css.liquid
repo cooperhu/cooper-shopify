@@ -502,8 +502,16 @@ textarea {
     border-top: 1px solid black;
 }
 
+.cart-drawer__footer.hidden {
+    display: none;
+}
+
 .cart-drawer__footer p {
     margin: 0 0 0.5rem 0;
+}
+
+p.cart-drawer-subtotal {
+    margin-bottom: 0.75rem;
 }
 
 .cart-drawer-label {
@@ -533,7 +541,7 @@ textarea {
  * Main Content 
  * ************************** */
 .site-main {
-    padding: var(--padding-side-sm);
+    padding: 0 var(--padding-side-sm) 2rem;
     
     flex-grow: 0.6; /* slightly offsets from center */
     display: flex;
@@ -543,7 +551,13 @@ textarea {
 
 @media screen and (min-width: 700px) {
     .site-main {
-        padding: var(--padding-side-md);
+        padding: 0 var(--padding-side-md) 4rem;
+    }
+}
+
+@media screen and (min-width: 1200px) {
+    .site-main {
+        padding: 0 var(--padding-side-lg) 4rem;
     }
 }
 
@@ -743,6 +757,7 @@ textarea {
 }
 
 .glide__slides {
+    margin-top: 0;
     transform: translate3d(0, 0, 0) !important;
 }
 
@@ -1046,7 +1061,6 @@ textarea {
 .cart-title {
     margin: 0;
     font-size: 0.93rem;
-
 }
 
 .cart-price {
@@ -1063,6 +1077,11 @@ textarea {
 
 .cart-quantity-selector {
     margin-bottom: 1rem;
+}
+
+.cart-drawer-checkout,
+.cart-drawer-checkout form {
+    display: inline-block;
 }
 /* **************************
  * Page
@@ -1143,11 +1162,22 @@ textarea {
  * BULLY TEXT STYLES
  * ************************** */
 .product-card__title {
+    margin: 0;
     font-size: 0.76563rem;
     letter-spacing: 0.2px;
     font-weight: 700;
     line-height: 1;
     text-transform: uppercase;
+
+    font-size: 0.825rem;
+    letter-spacing: 0.005rem;
+}
+
+h4 {
+    font-size: 0.825rem;
+    letter-spacing: 0.005rem;
+    line-height: 1;
+    letter-spacing: 0.2px;
 }
 
 .sp-title {
