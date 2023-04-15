@@ -7,6 +7,16 @@ shopify starter theme by connor hubeny - connorhubeny.com -->
 <!doctype html>
 <html class="no-js">
 <head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-YS1VHF08PE"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-YS1VHF08PE');
+    </script>
+
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -52,7 +62,7 @@ shopify starter theme by connor hubeny - connorhubeny.com -->
 
     <main class="site-main {% if page %}css-center-align{% endif %}" data-barba="wrapper">
         <div id="{% if request.path == '/' %}index{% else %}{{ request.path | remove_first: '/' | replace: '/', '--' }}{% endif %}"
-             class="site-content" 
+             class="site-content site-content-{{ template.name }}" 
              data-barba="container"
              data-barba-namespace="{{ template.name }}{{ template.suffix }}">
                 {{ content_for_layout }}

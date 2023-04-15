@@ -81,66 +81,67 @@
                 
                 {% comment %} Hidden field for the product id we pass to cart {% endcomment %}
                 <input id="productId" type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}"/> 
-                
-                {% comment %} Only show variants that exist {% endcomment %}
-                {% unless product.has_only_default_variant %}
-                    {% for option in product.options_with_values %}
-                        <div class="sp-option">
-                            <fieldset>
-                                <legend>{{ option.name }}</legend>
-                                {% for value in option.values %}
-                                    <label class="option-item option-{{ option.name | downcase}}" for="{{ option.name | handlize }}-{{ value | handlize }}">
-                                        <input type="radio" 
-                                                name="{{ option.name }}"
-                                                value="{{ value }}"
-                                                id="{{ option.name | handlize }}-{{ value | handlize }}"
-                                                {% if option.selected_value == value %} checked {% endif %}/>
-                                        <span class="checkbox">{{ value }}</span>
-                                    </label>
-                                    
-                                    <!--
-                                    <div class="option-{{ option.name | downcase}}">
-                                        <input type="radio" 
-                                            name="{{ option.name }}"
-                                            value="{{ value }}"
-                                            id="{{ option.name | handlize }}-{{ value | handlize }}"
-                                            {% if option.selected_value == value %} checked {% endif %}/>
-                                        <label for="{{ option.name | handlize }}-{{ value | handlize }}">{{ value }}</label>
-                                    </div>-->
-                                {% endfor %}
-                            </fieldset>
-                        </div>
-                    {% endfor %}
-                {% endunless %}
+                <div class="shopify-product-form__top">
+                    {% comment %} Only show variants that exist {% endcomment %}
+                    {% unless product.has_only_default_variant %}
+                        {% for option in product.options_with_values %}
+                            <div class="sp-option {{ option.name | downcase}}">
+                                <fieldset>
+                                    <legend>{{ option.name }}</legend>
+                                     <div class="sp-option-inner">
+                                        {% for value in option.values %}
+                                            <label class="option-item option-{{ option.name | downcase}}" for="{{ option.name | handlize }}-{{ value | handlize }}">
+                                                <input type="radio" 
+                                                        name="{{ option.name }}"
+                                                        value="{{ value }}"
+                                                        id="{{ option.name | handlize }}-{{ value | handlize }}"
+                                                        {% if option.selected_value == value %} checked {% endif %}/>
+                                                <span class="checkbox">{{ value }}</span>
+                                            </label>
+                                
+                                        {% endfor %}
+                                    </div>
+                                </fieldset>
+                            </div>
+                        {% endfor %}
+                    {% endunless %}
 
-                {% comment %} Disable the fields if the product is sold-out {% endcomment %}
-                {% if product.selected_or_first_available_variant.available %} 
-                    {% assign disable_field = ''; %}
-                {% else %}
-                    {% assign disable_field = 'disabled'; %}
-                {% endif %}
+                    {% comment %} Disable the fields if the product is sold-out {% endcomment %}
+                    {% if product.selected_or_first_available_variant.available %} 
+                        {% assign disable_field = ''; %}
+                    {% else %}
+                        {% assign disable_field = 'disabled'; %}
+                    {% endif %}
 
-                {% comment %} Quantity {% endcomment %}
-                <div class="sp-option">
-                  <button {{ disable_field }} class="quantity__btn js-sub js-disable-field" type="button">-</button>
-                  <input  {{ disable_field }} class="quantity__input js-disable-field" type="number" id="quantity" name="quantity" value="1" min="1" max="10" />
-                  <button {{ disable_field }} class="quantity__btn js-add js-disable-field" type="button">+</button>
+                    {% comment %} Quantity {% endcomment %}
+                    <div class="sp-option quantity">
+                        <fieldset>
+                            <legend>Quantity</legend>
+                            <button {{ disable_field }} class="quantity__btn js-sub js-disable-field" type="button">-</button>
+                            <input  {{ disable_field }} class="quantity__input js-disable-field" type="number" id="quantity" name="quantity" value="1" min="1" max="10" />
+                            <button {{ disable_field }} class="quantity__btn js-add js-disable-field" type="button">+</button>
+                        </fieldset>
+                    </div>
                 </div>
 
                 {% comment %} Add to Cart {% endcomment %}
-                <button id="addToCartBtn" {{ disable_field }} type="submit" class="add-to-cart-btn js-disable-field">
-                    {% if product.selected_or_first_available_variant.available %}
-                        Add to Cart
-                    {% else %}
-                        Sold Out
+                <div class="sp-option submit">
+                    <button id="addToCartBtn" {{ disable_field }} type="submit" class="add-to-cart-btn js-disable-field">
+                        {% if product.selected_or_first_available_variant.available %}
+                            Add to Cart
+                        {% else %}
+                            Sold Out
+                        {% endif %}
+                    </button>
+
+                    {% if settings.show_buy_now %}
+                        <button id="buyItNowBtn" type="submit" 
+                                class="js-disable-field {% unless product.selected_or_first_available_variant.available %} hidden {% endunless %}">Buy it Now</button>
                     {% endif %}
-                </button>
+                </div>
                 
 
-                {% if settings.show_buy_now %}
-                    <button id="buyItNowBtn" type="submit" 
-                            class="js-disable-field {% unless product.selected_or_first_available_variant.available %} hidden {% endunless %}">Buy it Now</button>
-                {% endif %}
+                
                 
             {% endform %}
         </div>

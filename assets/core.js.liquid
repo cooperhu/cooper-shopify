@@ -160,13 +160,29 @@ function initProductForm() {
 
 function initProductGallery() {
   let startPos = document.querySelector('[data-glide-start]').getAttribute('data-glide-start');
+  
+  const slider = document.querySelector('.sp-gallery');
+  const activeBullet = "glide__bullet--active";
+  const bulletsContainerElement = slider.querySelector(".glide__bullets");
 
-  let glide = new Glide('.sp-gallery', {
+  const changeActiveBullet = (newIndex, containerElement) => {
+    const glideDir = containerElement.querySelector(`[data-glide-dir="=${newIndex}"]`);
+    containerElement.querySelector(`.${activeBullet}`).classList.remove(activeBullet);
+    if (glideDir) glideDir.classList.add(activeBullet);
+  };
+
+  let glide = new Glide(slider, {
     type: 'carousel',
     startAt: startPos - 1,
+    autoHeight: true,
+    duration: 750,
     perView: 1,
     gap: 0,
   }).mount();
+
+  glide.on('run', () => {
+    requestAnimationFrame(() => changeActiveBullet(glide.index, bulletsContainerElement));
+  });
 
   const options = {
     // mainClass: 'pswp--custom-icon-colors',
@@ -328,6 +344,8 @@ function addToCart() {
     e.preventDefault();
     // disable buttons to prevent multiple submission
     disableProductFormField(true);
+
+    document.querySelector('#addToCartBtn').innerHTML = 'Adding...';
     
     // get the cart obj
     axios.get('/cart.js')
@@ -375,11 +393,20 @@ function addToCart() {
         });
       }
       // enable buttons/allow resubmission
+      setTimeout(() => {
+        document.querySelector('#addToCartBtn').innerHTML = 'Added!';
+      }, 2000);
+
       disableProductFormField(false);
 
       if (document.querySelector('.cart-drawer__footer').classList.contains('hidden')) {
         document.querySelector('.cart-drawer__footer').classList.remove('hidden');
       }
+
+      setTimeout(() => {
+        document.querySelector('#addToCartBtn').innerHTML = 'Add to Cart';
+      }, 3000);
+      
     });
   });
 }

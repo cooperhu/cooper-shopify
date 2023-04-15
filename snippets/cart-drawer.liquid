@@ -45,7 +45,7 @@
         <p class="cart-drawer-label cart-drawer-subtotal">Subtotal: <span class="js-cart-total">{{ cart.total_price | money }}</span></p>
         <div class="cart-drawer-checkout">
             {% form 'cart', cart %} 
-                <button type="submit" name="checkout" data-barba-prevent="self" class="js-checkout btn">Checkout</button>
+                <button type="submit" name="checkout" data-barba-prevent="self" class="js-checkout btn black">Checkout</button>
             {% endform %}
         </div>
         
