@@ -394,10 +394,10 @@ function addToCart() {
       }
       // enable buttons/allow resubmission
       setTimeout(() => {
-        document.querySelector('#addToCartBtn').innerHTML = 'Added!';
-      }, 2000);
+        document.querySelector('#addToCartBtn').innerHTML = 'Added';
+      }, 200);
 
-      disableProductFormField(false);
+      // disableProductFormField(false);
 
       if (document.querySelector('.cart-drawer__footer').classList.contains('hidden')) {
         document.querySelector('.cart-drawer__footer').classList.remove('hidden');
