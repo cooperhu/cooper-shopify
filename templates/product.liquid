@@ -1,36 +1,64 @@
 <section class="single-product" data-producturl="{{ product.url }}">
     <div class="single-product__left">
-        <div class="sp-gallery">
-            <script>
-                console.log('hi', {{ product.selected_or_first_available_variant | json }}); 
-            </script>
 
+        <section class="sp-gallery">
             {% if product.selected_or_first_available_variant.featured_image %}
-                {% assign featured = product.selected_or_first_available_variant.featured_image %}
-                <img id="productImage"
-                     src="{{ featured | image_url: master }}" 
-                     width="{{ featured.width }}" 
-                     height="{{ featured.height }}" 
-                     alt="{{ featured.alt }}"
-                     loading="lazy" />
+                {% assign featured = product.selected_or_first_available_variant %}
+                {% assign num = 'true'; %}
             {% else %}
-                {% assign featured = product.featured_image %}
-                <img id="productImage"
-                     src="{{ featured | image_url: master }}" 
-                     width="{{ featured.width }}" 
-                     height="{{ featured.height }}" 
-                     alt="{{ featured.alt }}"
-                     loading="lazy" />
+                {% assign featured = product %}
+                {% assign num = 'false'; %}
             {% endif %}
 
-            <ul class="sp-gallery-thumbs">
-                {% for image in product.images %}
-                    <li class="{% if image == featured %}active{% endif %}">
-                        <img src="{{ image | image_url: master }}"/>
-                    </li>
-                {% endfor %}
-            </ul>
-        </div>
+            <div class="glide" data-glide-start="{{ featured.featured_media.position }}">
+              <div class="glide__track" data-glide-el="track">
+                <ul class="glide__slides">
+                    {% for image in product.images %}
+                        <li class="glide__slide">
+                            <div class="gallery-item {% if image == featured %}active{% endif %}" data-index="{{ forloop.index0 }}">
+                                <a href="{{ image | image_url: master }}" data-pswp-width="{{ image.width }}" data-pswp-height="{{ image.height }}">
+                                    <img data-index="{{ forloop.index0 }}"
+                                     src="{{ image | image_url: master }}" 
+                                     width="{{ image.width }}" 
+                                     height="{{ image.height }}" 
+                                     alt="{{ image.alt }}" />
+                                </a>
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+
+                {% comment %} Glide Arrows
+                <div class="glide__arrows" data-glide-el="controls">
+                    <button class="glide__arrow glide__arrow--left" data-glide-dir="<">prev</button>
+                    <button class="glide__arrow glide__arrow--right" data-glide-dir=">">next</button>
+                </div>
+                {% endcomment %}
+
+                <div class="glide__bullets" data-glide-el="controls[nav]">
+                    {% for image in product.images %}
+                        <button class="glide__bullet" data-glide-dir="={{ forloop.index0 }}">
+                            <img data-index="{{ forloop.index0 }}"
+                                 src="{{ image | image_url: width: 200 }}" 
+                                 width="{{ image.width }}" 
+                                 height="{{ image.height }}" 
+                                 alt="{{ image.alt }}" />
+                        </button>
+                    {% endfor %}
+                    
+                </div>
+
+              </div>
+            </div>
+            
+            {% comment %} Glide Controls
+            <div data-glide-el="controls">
+              <button data-glide-dir="<<">Start</button>
+              <button data-glide-dir=">>">End</button>
+            </div>
+            {% endcomment %}
+                    
+        </section>
     </div>
     <div class="single-product__right">
         <div class="sp-wrapper">
@@ -118,3 +146,37 @@
         </div>
     </div>
 </section>
+<!--
+<script type="module">
+    import PhotoSwipeLightbox from '{{ 'photoswipe-lightbox.esm.min.js' | asset_url }}';
+
+    const leftArrowSVGString = '<svg aria-hidden="true" class="pswp__icn" viewBox="0 0 100 125" width="100" height="125"><path d="M5,50L50,5l3,3L11,50l42,42l-3,3L5,50z M92,95l3-3L53,50L95,8l-3-3L47,50L92,95z"/></svg>';
+
+    const options = {
+      arrowPrevSVG: leftArrowSVGString,
+      arrowNextSVG: leftArrowSVGString,
+
+      // to apply styles just to this instance of PhotoSwipe
+      mainClass: 'pswp--custom-icon-colors',
+      showHideAnimationType: 'fade',
+      opacity: 1,
+      gallery: '.test-gallery',
+      children: 'a',
+      pswpModule: () => import('{{ 'photoswipe.esm.min.js' | asset_url }}')
+    };
+    const lightbox = new PhotoSwipeLightbox(options);
+
+    lightbox.init();
+</script>
+-->
+<!--
+<script type="module">
+    import PhotoSwipeLightbox from 'photoswipe/dist/photoswipe-lightbox.esm.js';
+    const lightbox = new PhotoSwipeLightbox({
+      gallery: '#my-gallery',
+      children: 'a',
+      pswpModule: () => import('photoswipe/dist/photoswipe.esm.js')
+    });
+    lightbox.init();
+</script>
+-->

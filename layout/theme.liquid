@@ -33,7 +33,8 @@ shopify starter theme by connor hubeny - connorhubeny.com -->
     
     {{ content_for_header }}
 
-    {{ 'animate.min.css' | asset_url | stylesheet_tag }}
+    {{ 'photoswipe.css' | asset_url | stylesheet_tag }}
+    {{ 'glide.min.css' | asset_url | stylesheet_tag }}
     {{ 'slick.css' | asset_url | stylesheet_tag }}
     {{ 'main.css' | asset_url | stylesheet_tag }}
 
@@ -65,10 +66,22 @@ shopify starter theme by connor hubeny - connorhubeny.com -->
     {{ 'axios.min.js'  | asset_url | script_tag }}
     {{ 'url-parse.min.js' | asset_url | script_tag }}
     {{ 'barba.min.js' | asset_url | script_tag }}
+
     {{ 'gsap.min.js' | asset_url | script_tag }}
     {{ 'ScrollToPlugin.min.js' | asset_url | script_tag }}
     {{ 'ScrollTrigger.min.js' | asset_url | script_tag }}
+
+    {{ 'glide.min.js' | asset_url | script_tag }}
+    {{ 'photoswipe-lightbox.umd.min.js' | asset_url | script_tag }}
+    {{ 'photoswipe.umd.min.js' | asset_url | script_tag }}
+
     
+    <!--
+    <script type="module" src="{{ 'photoswipe-lightbox.esm.min.js' | asset_url }}"></script>
+    -->
+    <!--
+    <script type="module" src="{{ 'photoswipe.esm.min.js' | asset_url }}"></script>
+    -->
     {{ 'locomotive-scroll.min.js' | asset_url | script_tag }}
     {{ 'jquery.min.js' | asset_url | script_tag }}
     {{ 'slick.min.js' | asset_url | script_tag }}

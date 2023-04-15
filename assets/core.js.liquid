@@ -194,6 +194,7 @@ function closeCartDrawer() {
 var initSingleProduct = function() {
   console.log('on product page');
   initProductForm();
+  initProductGallery();
 };
 
 var initCartPage = function() {
@@ -242,11 +243,63 @@ function initProductForm() {
   bindVariantOptions();
   // Bind quantity +/- controls
   bindQuantityCount();
-  // bind gallery/thumbnail clicks
-  bindGalleryControls();
   // custom add to cart form submit
   addToCart();
 }
+
+function initProductGallery() {
+  let startPos = document.querySelector('[data-glide-start]').getAttribute('data-glide-start');
+
+  let glide = new Glide('.sp-gallery', {
+    type: 'carousel',
+    startAt: startPos - 1,
+    perView: 1,
+    gap: 0,
+  }).mount();
+
+  const options = {
+    // mainClass: 'pswp--custom-icon-colors',
+    showHideAnimationType: 'fade',
+    bgOpacity: 1,
+    gallery: '.glide__slides',
+    children: '.glide__slide:not(.glide__slide--clone) a',
+    
+    pinchToClose: true,
+    pswpModule: PhotoSwipe
+  };
+
+  const lightbox = new PhotoSwipeLightbox(options);
+
+  lightbox.init();
+
+  // Bind thumbnails 
+  /*
+  document.querySelector('#productImage').addEventListener('click', () => {
+    // go to slide by index
+    let index = document.querySelector('#productImage').getAttribute('data-index');
+    lightbox.loadAndOpen(index);
+  });
+
+  document.querySelectorAll('.sp-gallery-thumbs li a').forEach(anchor => {
+    anchor.addEventListener('click', (e) => {
+      alert('hi4');
+      e.preventDefault();
+    });
+  });
+
+  // Bind thumbnails
+  document.querySelectorAll('.sp-gallery-thumbs li').forEach(li => {
+    li.addEventListener('click', () => {
+      document.querySelector('.sp-gallery-thumbs li.active').classList.remove('active');
+      li.classList.add('active');
+      
+      document.querySelector('#productImage').src = li.querySelector('img').getAttribute('src');
+      document.querySelector('#productImage').dataset.index = li.getAttribute('data-index');
+    
+    });
+  });*/
+}
+
 
 function bindQuantityCount() {
     console.log('bindQuantityCount');
@@ -443,17 +496,6 @@ function addToCart() {
     });
   });
 }
-
-var bindGalleryControls = function() {
-  document.querySelectorAll('.sp-gallery-thumbs li').forEach(li => {
-    li.addEventListener('click', () => {
-      document.querySelector('.sp-gallery-thumbs li.active').classList.remove('active');
-      li.classList.add('active');
-      document.querySelector('#productImage').src = li.querySelector('img').getAttribute('src');
-    });
-  });
-};
-
 
 /* Cart Functions */ 
 function bindCartPageControls() {
