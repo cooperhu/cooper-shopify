@@ -22,6 +22,7 @@ function initNavigation() {
   navButton.addEventListener('click', function(e) {
     e.preventDefault();
 
+    // close cart if navigating to new page
     closeCartDrawer();
 
     this.classList.toggle('active');
@@ -56,37 +57,29 @@ function initNavigation() {
 };
 
 function initCartDrawer() {
-  // Opens Cart
-  document.querySelector('.js-open-cart').addEventListener('click', function(e) {
-    e.preventDefault();
-    document.querySelector('.cart-drawer').classList.add('active');
-    gsap.to('.cart-drawer', 0.35, {autoAlpha: 1, opacity: 1, display: 'flex' }); // this also fires in updatecartdrawerui function (need to combine)
-  });
-
-  // Closes Cart
-  document.querySelector('.js-close-cart').addEventListener('click', function(e) {
-    e.preventDefault();
-    document.querySelector('.cart-drawer').classList.remove('active');
-    gsap.to('.cart-drawer', 0.35, {autoAlpha: 0, opacity: 0, display: 'none'});
-  });
-
-  // Close cart when navigating from within it
-  const cartButtons = document.querySelectorAll('.cart-drawer-item-title a');
-  cartButtons.forEach(cartButton => {
-    cartButton.addEventListener('click', function () {
-      closeCartDrawer();
+  // Open Cart
+  document.querySelectorAll('.js-open-cart').forEach(cartButton => {
+    cartButton.addEventListener('click', (e) => {
+      openCartDrawer();
     });
   });
 
-  // remove cart items from within cart/cart-drawer
+  // Close cart
   document.querySelectorAll('.js-close-cart').forEach(cartButton => {
     cartButton.addEventListener('click', (e) => {
       closeCartDrawer();
     });
   });
 
+  // Close cart when navigating from within it
+  document.querySelectorAll('.cart-drawer-item-title a').forEach(cartButton => {
+    cartButton.addEventListener('click', function () {
+      closeCartDrawer();
+    });
+  });
+
+  // remove cart items from within cart/cart-drawer
   document.querySelectorAll('.js-remove-cart-item').forEach(remove => {
-    console.log('hellowolrd');
     remove.addEventListener('click', (e) => {
       e.preventDefault();
       bindRemoveCartItem(remove);
@@ -226,7 +219,7 @@ function bindVariantOptions() {
   .then(response => response.json())
   .then(product => {
     // Your code that uses the product data goes here
-    // console.log(product);
+    // console.log('prod',product);
     document.querySelectorAll('.sp-option input[type="radio"]').forEach(radio => {
       radio.addEventListener('change', () => {
         // find selected options
@@ -263,21 +256,34 @@ function bindVariantOptions() {
         // change price
         const format = document.querySelector('[data-moneyformat]').getAttribute('data-moneyformat');
 
-        document.querySelector('.sp-price').textContent = formatMoney(matchedVariant.price, format);
-        document.querySelector('.sp-compare-price').textContent = formatMoney(matchedVariant.compare_at_price, format);
+        
+        document.querySelectorAll('.js-sp-price').forEach(price => {
+          price.textContent = formatMoney(matchedVariant.price, format);
+        });
+        
+        document.querySelectorAll('.js-sp-compare-price').forEach(price => {
+          price.textContent = formatMoney(matchedVariant.compare_at_price, format);
+        });
 
         // toggle price classes
-        matchedVariant.compare_at_price > matchedVariant.price ? 
-          document.querySelector('.sp-compare-price').classList.remove('hidden') : 
-          document.querySelector('.sp-compare-price').classList.add('hidden')
-
+        if (matchedVariant.compare_at_price > matchedVariant.price) {
+          document.querySelectorAll('.js-sp-compare-price').forEach(price => {
+            price.classList.remove('hidden');
+          });
+        } else {
+          document.querySelectorAll('.js-sp-compare-price').forEach(price => {
+            price.classList.add('hidden');
+          });
+        }
+          
         // change image
+        /*
         if (matchedVariant.featured_image) {
           document.querySelector('#productImage').setAttribute('src', matchedVariant.featured_image.src);
           document.querySelector('.sp-gallery-thumbs li.active').classList.remove('active');
           document.querySelectorAll('.sp-gallery-thumbs li')[matchedVariant.featured_image.position - 1].classList.add('active');
         }
-
+        */
         // change button
         var addToCartBtn = document.querySelector('#addToCartBtn');
         var buyItNowBtn = document.querySelector('#buyItNowBtn');
@@ -405,7 +411,8 @@ function addToCart() {
 
       setTimeout(() => {
         document.querySelector('#addToCartBtn').innerHTML = 'Add to Cart';
-      }, 3000);
+        disableProductFormField(false);
+      }, 1200);
       
     });
   });
@@ -433,13 +440,15 @@ function bindRemoveCartItem(removeItem) {
     // update cart drawer UI
     if (res.data.items.length === 0) {
       // Show empty cart message
-      var emptyCartMessage = '<h4 class="cart-drawer-label empty-cart-label">Your cart is empty</h4>';
-      var cartDrawerBody = document.querySelector('.cart-drawer__body');
+      var emptyCartMessage = '<h4 class="cart-label empty-cart-label">Your cart is empty</h4>';
+      var cartDrawerBody = document.querySelector('.cart-table__body');
       cartDrawerBody.classList.add('empty');
       cartDrawerBody.innerHTML = emptyCartMessage;
 
-      // hide cart drawer footer
+      // hide cart drawer header/footer
+      document.querySelector('.cart-table__header').classList.add('hidden');
       document.querySelector('.cart-drawer__footer').classList.add('hidden');
+      
 
       // update cart page if on cart
       if (document.querySelector('.cart-wrapper')) {
@@ -467,9 +476,15 @@ function bindRemoveCartItem(removeItem) {
   });
 }
 
+
+function openCartDrawer() {
+  document.querySelector('.cart-drawer').classList.add('active');
+  gsap.to('.cart-drawer', 0.35, { autoAlpha: 1, opacity: 1 });
+}
+
 function closeCartDrawer() {
   document.querySelector('.cart-drawer').classList.remove('active');
-  gsap.to('.cart-drawer', 0.35, {autoAlpha: 0, opacity: 0, display: 'none'});
+  gsap.to('.cart-drawer', 0.35, { autoAlpha: 0, opacity: 0 });
 }
 
 function bindCartPageControls() {
@@ -562,7 +577,7 @@ function updateCartUI(newitem, cartobj, exists) {
 
   if (exists) {
     // find and update UI elements
-    const cartDrawerItem = document.querySelectorAll('.cart-drawer-item').forEach(item => {
+    const cartDrawerItem = document.querySelectorAll('.cart-item').forEach(item => {
       const cartDrawerItemId = item.getAttribute('data-product-id');
       if (parseInt(cartDrawerItemId) === newItemId) {
         const obj = cartobj.items.find(element => element.id === newItemId);
@@ -571,10 +586,11 @@ function updateCartUI(newitem, cartobj, exists) {
       }
     });
   } else {
-    // create the element and add it to top of cart. 
-    const cartBody = document.querySelector('.cart-drawer__body');
 
-    console.log('item', newitem);
+    // console.log('cart', cartobj);
+
+    // create the element and add it to top of cart. 
+    const cartBody = document.querySelector('.cart-table__body');
 
     // const productTitle = newitem.variant_title ? newitem.product_title + ' - ' + newitem.variant_title : newitem.product_title;
     const productTitle = newitem.product_title.toUpperCase();
@@ -582,41 +598,63 @@ function updateCartUI(newitem, cartobj, exists) {
     let variantMarkup = '';
 
     if (newitem.options_with_values) {
-      variantMarkup += '<p class="cart-variant-label">|</p>';
+      variantMarkup += '';
     }
+
     newitem.options_with_values.forEach(variant => {
       variantMarkup += `
-        <p class="cart-variant-label">${variant.name}: ${variant.value}</p>
+        <p class="cart-label">${variant.name}: ${variant.value}</p>
       `;
     });
 
-    console.log('options',newitem.options_with_values);
-    console.log('variantMarkup', variantMarkup);
+    console.log('newitem', newitem);
       
     let itemMarkup =  `
-      <div class="cart-drawer-item js-cart-item js-set-fade-in" data-product-id="${newitem.id}" data-key="${newitem.key}" style="opacity: 0;">
-        <div class="cart-drawer-item-img">
-          <a href="${newitem.url}">
-            <img src="${newitem.featured_image.url}"/>
-          </a>
-        </div>
-        <div class="cart-drawer-item-info">
-          <h4 class="cart-drawer-item-title"><a href="${newitem.url}">${productTitle} x<span class="js-cart-item-quantity">${newitem.quantity}</span></a></h4>
-          <p class="cart-drawer-item-price js-cart-item-price">${productLinePrice}</p>
-          ${variantMarkup}
-        </div>
-        <div class="cart-drawer-item-remove">
-          <a href="#" class="cart-remove-btn js-remove-cart-item" data-key="${newitem.key}">×</a>
-        </div>
+      <div class="js-cart-item cart-item" data-product-id="${newitem.id}" data-key="${newitem.key}">
+          <div class="cart-col-product">
+            <div class="cart-drawer-card">
+                <div class="cart-drawer-card__img">
+                  <a href="${newitem.url}">
+                    <img src="${newitem.featured_image.url}"/>
+                  </a>
+                </div>
+                <div class="cart-drawer-card__content">
+                  <h4 class="cart-drawer-item-title">
+                    <a href="${newitem.url}">${productTitle}</a>
+                  </h4>
+                  ${variantMarkup}
+
+                  <a href="#" class="cart-link js-remove-cart-item" data-key="${newitem.key}">Remove</a>
+                </div>
+              </div>
+          </div>
+
+          <div class="cart-col-amount">
+              <span class="cart-label lowercase">x<span class="js-cart-item-quantity">${newitem.quantity}</span></span>
+          </div>
+                            
+          <div class="cart-col-total">
+              <span class="cart-label cart-drawer-item-price js-cart-item-price">
+                  ${productLinePrice}
+              </span>
+          </div>
       </div>
     `;
 
     if (document.querySelector('.cart-drawer__body').classList.contains('empty')) {
       cartBody.innerHTML = itemMarkup;
-      document.querySelector('.cart-drawer__body').classList.remove('empty')
+      document.querySelector('.cart-drawer__body').classList.remove('empty');
+      document.querySelector('.cart-table__header').classList.remove('hidden');
     } else {
       // Insert new HTML at the top of the existing element
-      cartBody.insertAdjacentHTML('afterbegin', itemMarkup);
+      // if cart is empty replace OR add to top
+      
+      if (cartobj.item_count === 1) {
+        document.querySelector('.cart-drawer .cart-table__header').classList.remove('hidden');
+        document.querySelector('.cart-drawer .cart-table__body').innerHTML = itemMarkup;
+      } else {
+        document.querySelector('.cart-drawer .cart-table__body').insertAdjacentHTML('afterbegin', itemMarkup);
+      }
     }
 
     gsap.to('.js-set-fade-in', 0.6, {opacity: 1, delay: 0.1});

@@ -1,45 +1,79 @@
 <div class="cart-drawer" data-moneyformat="{{ shop.money_format }}">
     <div class="cart-drawer__header">
-        <h4 class="cart-drawer-label"><a href="/cart" class="js-close-cart">Cart</a>: <span class="js-cart-count">{{ cart.item_count }}</span></h4>
-        <button class="cart-drawer-close-btn js-close-cart">Close</button>
+        <h4 class="cart-drawer-label"><a href="/cart" class="cart-link js-close-cart">Cart</a></h4>
+        <button class="cart-drawer-close-btn js-close-cart">
+            <span></span>
+            <span></span>
+        </button>
     </div>
     <div class="cart-drawer__body {% if cart.empty? %} empty {% endif %}">
-        {% if cart.empty? %}
-            <h4 class="cart-drawer-label empty-cart-label">Your cart is empty</h4>
-        {% else %}
-            {% for item in cart.items %}
-                
-                <div class="cart-drawer-item js-cart-item" data-product-id="{{ item.id }}" data-key="{{ item.key }}">    
-                    <div class="cart-drawer-item-img">
-                        <a href="{{ item.url }}">
-                            <img src="{{ item.image | image_url: width: 75}}" 
-                                 alt="{{ item.image.alt | escape }}" 
-                                 loading="lazy" 
-                                 width="{{ item.image.width }}" 
-                                 height="{{ item.image.height }}" />
-                        </a>
-                    </div>
-
-                    <div class="cart-drawer-item-info">
-                        <h4 class="cart-drawer-item-title">
-                            <a href="{{ item.url }}">{{ item.product.title | upcase }} x<span class="js-cart-item-quantity">{{ item.quantity }}</span></a>
-                        </h4>
-                        <p class="cart-drawer-item-price js-cart-item-price">{{ item.final_line_price | money }}</p> 
-                        {% if item.options_with_values %}
-                            <p class="cart-variant-label"> | </p>
-                            {% for variant in item.options_with_values %}
-                                <p class="cart-variant-label">{{ variant.name}}: {{variant.value}}</p>
-                            {% endfor %}
-                        {% endif %}
-                    </div>
-                    
-                    <div class="cart-drawer-item-remove">
-                        <a href="#" class="cart-remove-btn js-remove-cart-item" data-key="{{ item.key }}">×</a>
-                    </div>
+        
+        <div class="cart-table">
+            <div class="cart-table__header {% if cart.empty? %} hidden {% endif %}">
+                <div class="cart-col-product">
+                    <span class="cart-label">Products (<span class="js-cart-count">{{ cart.item_count }}</span>)</span><br/>
                 </div>
-            {% endfor %}
 
-        {% endif %}
+                <div>
+                    <span class="cart-label"></span>
+                </div>
+                
+                <div class="cart-col-total">
+                    <span class="cart-label">Total</span>
+                </div>
+            </div>
+
+            <div class="cart-table__body">
+                {% if cart.empty? %}
+                    <h4 class="cart-label empty-cart-label">Your cart is empty</h4>
+                {% else %}
+                    {% for item in cart.items %}
+                        <div class="js-cart-item cart-item" data-product-id="{{ item.id }}" data-key="{{ item.key }}">    
+                            <div class="cart-col-product">
+                                <div class="cart-drawer-card">
+                                    <div class="cart-drawer-card__img">
+                                        <a href="{{ item.url }}">
+                                            <img src="{{ item.image | image_url: width: 75}}" 
+                                                 alt="{{ item.image.alt | escape }}" 
+                                                 loading="lazy" 
+                                                 width="{{ item.image.width }}" 
+                                                 height="{{ item.image.height }}" />
+                                        </a>
+                                    </div>
+                                    <div class="cart-drawer-card__content">
+                                        <h4 class="cart-drawer-item-title">
+                                            <a href="{{ item.url }}">{{ item.product.title | upcase }}</a>
+                                        </h4>
+                                        {% if item.options_with_values %}
+                                            {% for variant in item.options_with_values %}
+                                                <p class="cart-label">
+                                                    {% unless variant.name == 'Amount' %}
+                                                        {{ variant.name}}: 
+                                                    {% endunless %}
+                                                    {{variant.value}}
+                                                </p>
+                                            {% endfor %}
+                                        {% endif %}
+
+                                        <a href="#" class="cart-link js-remove-cart-item" data-key="{{ item.key }}">Remove</a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="cart-col-amount">
+                                <span class="cart-label lowercase">x<span class="js-cart-item-quantity">{{ item.quantity }}</span></span>
+                            </div>
+                            
+                            <div class="cart-col-total">
+                                <span class="cart-label cart-drawer-item-price js-cart-item-price">
+                                    {{ item.final_line_price | money }}
+                                </span>
+                            </div>
+                        </div>
+                    {% endfor %}  
+                {% endif %}
+            </div>
+        </div>
     </div>
     <div class="cart-drawer__footer {% if cart.empty? %}hidden{% endif %}">
         <p class="cart-drawer-label cart-drawer-subtotal">Subtotal: <span class="js-cart-total">{{ cart.total_price | money }}</span></p>

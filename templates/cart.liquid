@@ -6,46 +6,77 @@
         {% else %}
             <div class="cart" data-moneyformat="{{ shop.money_format }}">
                 <div class="cart__header">
-                    <h1 class="cart-label">Cart: <span class="js-cart-count">{{ cart.item_count }}</span></h1>
+                    <h1 class="cart-label">Cart</h1>
                 </div>
+
                 <div class="cart__body">
-                    {% for item in cart.items %}
-
-                        <div class="cart-item js-cart-item" data-key="{{ item.key }}">
-                            <div class="cart-item__img">
-                                <a href="{{ item.url }}">
-                                    <img src="{{ item.image | image_url: width: 200}}"/>
-                                </a>
+                    <div class="cart-table">
+                        <div class="cart-table__header">
+                            <div class="cart-col-product">
+                                <span class="cart-label">Products (<span class="js-cart-count">{{ cart.item_count }}</span>)</span><br/>
                             </div>
-                            <div class="cart-item__content">
-
-                                <h2 class="cart-title"><a href="{{ item.url }}">{{ item.product.title | upcase }} x<span class="js-cart-item-quantity">{{ item.quantity }}</span></a></h2>
-                                
-                                <div>
-                                    <p class="cart-drawer-item-price js-cart-item-price">{{ item.final_line_price | money }}</p> 
-                                    {% if item.total_discount > 0 %}
-                                        <span class="cart-drawer-item-price discount-tag">{{ item.total_discount | money }} off</span>
-                                    {% endif %}
-
-                                    {% if item.options_with_values %}
-                                        <p class="cart-variant-label"> | </p>
-                                        {% for variant in item.options_with_values %}
-                                            <p class="cart-variant-label">{{ variant.name}}: {{variant.value}}</p>
-                                        {% endfor %}
-                                    {% endif %}
-                                </div>
-                                
-                                {% comment %} Quantity {% endcomment %}
-                                <div class="cart-quantity-sector">
-                                  <button class="quantity__btn js-minus" type="button">-</button>
-                                  <input  class="quantity__input" id="quantity" name="updates[]" value="{{ item.quantity }}" min="1" max="100" />
-                                  <button class="quantity__btn js-plus" type="button">+</button>
-                                </div>
-
-                                <a class="cart-label cart-remove-item js-remove-cart-item" href="#" data-key="{{ item.key }}">Remove from Cart</a>
+                            <div class="cart-col-amount">
+                                <span class="cart-label">Amount</span>
+                            </div>
+                            <div class="cart-col-total">
+                                <span class="cart-label">Total</span>
                             </div>
                         </div>
-                    {% endfor %}
+
+                        <div class="cart-table__body">
+                            {% for item in cart.items %}
+                                <div class="cart-item js-cart-item" data-key="{{ item.key }}">
+                                    <div class="cart-col-product">
+                                        <div class="cart-card js-cart-item" data-key="{{ item.key }}">
+                                            <div class="cart-item__img">
+                                                <a href="{{ item.url }}">
+                                                    <img src="{{ item.image | image_url: width: 200}}"/>
+                                                </a>
+                                            </div>
+                                            <div class="cart-item__content">
+
+                                                <h2 class="cart-title"><a href="{{ item.url }}">{{ item.product.title | upcase }}</a></h2>
+                                                
+                                                <div>
+                                                    <p class="cart-label-small">{{ item.price | money }}</p> 
+                                                    
+                                                    {% if item.options_with_values %}
+                                                        <p class="cart-label-small caps"> | </p>
+                                                        {% for variant in item.options_with_values %}
+                                                            <p class="cart-label-small caps">
+                                                                {% unless variant.name == 'Amount' %}
+                                                                    {{ variant.name}}: 
+                                                                {% endunless %}
+                                                                
+                                                                {{variant.value}}
+                                                            </p>
+                                                        {% endfor %}
+                                                    {% endif %}
+                                                </div>
+                                                
+                                                {% comment %} Quantity {% endcomment %}
+                                                <div class="cart-quantity-sector">
+                                                  <button class="quantity__btn js-minus" type="button">-</button>
+                                                  <input  class="quantity__input" id="quantity" name="updates[]" value="{{ item.quantity }}" min="1" max="100" />
+                                                  <button class="quantity__btn js-plus" type="button">+</button>
+                                                </div>
+
+                                                <a class="cart-link cart-remove-item js-remove-cart-item" href="#" data-key="{{ item.key }}">Remove</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="cart-col-amount">
+                                        <span class="cart-label-small">x<span class="js-cart-item-quantity">{{ item.quantity }}</span></span>
+                                    </div>
+                                    <div class="cart-col-total">
+                                        <p class="cart-label-small js-cart-item-price">{{ item.final_line_price | money }}</p> 
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    
                 </div>
 
                 <div class="cart__footer">
@@ -66,7 +97,7 @@
                         {% endunless %}
                     {% endcomment %}
                     <div class="cart-totals">
-                        <p class="cart-label">Subtotal: <span class="js-cart-total">{{ cart.total_price | money }}</span></p>
+                        <p class="">Subtotal: <span class="js-cart-total">{{ cart.total_price | money }}</span></p>
                     </div>
                     <br/>
                     {% form 'cart', cart %} 
@@ -75,6 +106,7 @@
                 </div>
             </div>
             
+
         {% endif %}
    {% comment %} {% form 'cart', cart %} {% endform %} {% endcomment %}
 

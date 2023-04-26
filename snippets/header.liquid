@@ -51,5 +51,8 @@
         </form>
     {% endif %}
 
-    <button class="cart-drawer-button js-open-cart">Cart: <span class="cart-drawer-button-count js-cart-count">{{ cart.item_count }}</span></button>
+    <button class="cart-drawer-button cart-link js-open-cart">
+        <!-- <img src="{{ 'btn-cart.png' | asset_url }}"/> -->
+        Cart <span class="cart-drawer-button-count js-cart-count">{% unless cart.item_count == 0 %}{{ cart.item_count }}{% endunless %}</span>
+    </button>
 </header>
