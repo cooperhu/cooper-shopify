@@ -69,7 +69,7 @@
         {
           "type": "checkbox",
           "id": "show_newsletter",
-          "label": "Show Newsletter Form",
+          "label": "Enable Newsletter",
           "default": true
         },
         {

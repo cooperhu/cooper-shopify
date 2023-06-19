@@ -60,7 +60,7 @@ theme by connor hubeny - connorhubeny.com -->
     </script>
     
 </head>
-<body>
+  <body {% if settings.show_newsletter %} class="js-newsletter-enabled" {% endif %}>
 
     {% render 'header' %}
 
@@ -106,8 +106,5 @@ theme by connor hubeny - connorhubeny.com -->
         {{ 'scripts.js' | asset_url | script_tag }}
     {% endif %}
     
-    
-
-
 </body>
 </html>

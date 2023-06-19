@@ -1948,11 +1948,11 @@ fieldset legend {
  * ************************** */
 .newsletter-popup {
   position: fixed;
-  top: 0;
+  bottom: 0;
   left: 0;
   z-index: 10000;
   width: 100%;
-  height: 100%;
+  /* height: 100%; */
 
   display: flex;
   flex-direction: column;
@@ -1960,10 +1960,13 @@ fieldset legend {
 
   background: var(--site-bg);
 
-  padding: 2rem var(--padding-side-sm);
+  padding: 4rem var(--padding-side-sm) 2rem var(--padding-side-sm);
 
+  
   opacity: 0;
   visibility: hidden;
+
+  box-shadow: 0px -2px 7px 0px rgba(0,0,0,0.2);
 }
 
 .newsletter-popup__close-btn {
@@ -1986,6 +1989,27 @@ fieldset legend {
   max-width: 450px;
   
   margin: 0 auto;
+}
+
+@media screen and (min-width: 700px) {
+  .newsletter-popup {
+    bottom: 50%;
+    left: 50%;
+    transform: translate(-50%, 50%);
+    z-index: 10000;
+    
+    padding: 4rem 1.5rem 2rem 1.5rem;
+
+    box-shadow: 2px 2px 7px 0px rgba(0,0,0,0.2);
+    background: white;
+
+    max-width: 500px;
+  }
+
+  .newsletter-wrapper {
+    position: relative;
+    width: 100%;
+  }
 }
 
 .newsletter-input {

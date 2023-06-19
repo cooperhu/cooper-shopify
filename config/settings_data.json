@@ -5,7 +5,7 @@
     "loading_icon": "shopify:\/\/shop_images\/favicon.png",
     "site_bg_color": "#ffffff",
     "site_text_color": "#191919",
-    "show_banner": true,
+    "show_banner": false,
     "banner_text": "<a href=\"#subscribe\" title=\"#subscribe\">Sign up for our newsletter<\/a> to receive 10% off your first order.",
     "banner_bg_color": "#41fc65",
     "banner_text_color": "#191919",

@@ -14,10 +14,16 @@ initBase();
  * *********************** */
 function initBase() {
   // Show newsletter popup if cookie not set
-  var stateSelected = getCookie('popupShown');
-
-  if (stateSelected) { 
+  const bodyEl = document.querySelector('body');
+  let newsletterEnabled = bodyEl.classList.contains('js-newsletter-enabled');
   
+  getCookie('popupShown');
+
+  if (newsletterEnabled) { 
+    if (!getCookie('popupShown')) {
+      gsap.to('.newsletter-popup', 0.35, { autoAlpha: 1, opacity: 1, delay: 1.5 });
+      setCookie('popupShown', true);
+    } 
   }
 }
 
@@ -64,27 +70,34 @@ function initNavigation() {
       // markers: true,
     });
   }
+
   // open newsletter
-  document.querySelector('.js-open-newsletter').addEventListener('click', function(e) {
-    e.preventDefault();
-    gsap.to('.newsletter-popup', 0.35, { autoAlpha: 1, opacity: 1 });
-    document.getElementById('newsletterEmail').focus();
-  });
-
-  document.querySelector('.sitewide-banner a').addEventListener('click', function(e) {    
-    let value = this.getAttribute('href');
-
-    if (value === '#subscribe') {
+  document.querySelectorAll('.js-open-newsletter').forEach(item => {
+    item.addEventListener('click', function(e) {
       e.preventDefault();
       gsap.to('.newsletter-popup', 0.35, { autoAlpha: 1, opacity: 1 });
       document.getElementById('newsletterEmail').focus();
-    }
+    });
+  });
+
+  document.querySelectorAll('.sitewide-banner a').forEach(bannerLink => {
+    bannerLink.addEventListener('click', function(e) {    
+      let value = this.getAttribute('href');
+
+      if (value === '#subscribe') {
+        e.preventDefault();
+        gsap.to('.newsletter-popup', 0.35, { autoAlpha: 1, opacity: 1 });
+        document.getElementById('newsletterEmail').focus();
+      }
+    });
   });
 
   // close newsletter popup
-  document.querySelector('.js-close-popup').addEventListener('click', function(e) {
-    e.preventDefault();
-    gsap.to('.newsletter-popup', 0.35, { autoAlpha: 0, opacity: 0 });
+  document.querySelectorAll('.js-close-popup').forEach(item => {
+    item.addEventListener('click', function(e) {
+      e.preventDefault();
+      gsap.to('.newsletter-popup', 0.35, { autoAlpha: 0, opacity: 0 });
+    });
   });
 };
 
