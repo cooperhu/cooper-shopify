@@ -46,7 +46,8 @@
             "type": "inline_richtext",
             "id": "banner_text",
             "default": "This is the sitewide banner",
-            "label": "Inline rich text"
+            "label": "Inline rich text",
+            "info": "To open the newsletter signup popup add #subscribe to the link"
           },
           {
             "type": "color",
@@ -61,6 +62,29 @@
             "default": "#ffffff"
           }
         ]
+    }, 
+    {
+      "name": "Newsletter",
+      "settings": [
+        {
+          "type": "checkbox",
+          "id": "show_newsletter",
+          "label": "Show Newsletter Form",
+          "default": true
+        },
+        {
+          "type": "inline_richtext",
+          "id": "newsletter_headline",
+          "default": "Signup for the Newsletter",
+          "label": "Newsletter Headline"
+        },
+        {
+          "type": "inline_richtext",
+          "id": "newsletter_thanks_message",
+          "default": "Thanks for signing up!",
+          "label": "Newsletter Thank You Message"
+        }
+      ]
     }, 
     {
         "name": "Site Settings",

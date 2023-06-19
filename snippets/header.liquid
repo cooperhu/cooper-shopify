@@ -37,10 +37,18 @@
             {% for link in linklists.main-menu.links -%}
                 <div class="site-navigation-item"><a href="{{ link.url }}" {% if link.current %}aria-current="page" class="active" {% endif %}>{{ link.title }}</a></div>
             {%- endfor %}
+            
+            <div class="site-navigation-item"><a href="/cart" {% if template == 'cart' %}aria-current="page" class="active"{% endif %}>Cart</a></div>
+
+            {% if settings.show_newsletter %}
+                <div class="site-navigation-item"><a href="#" target="_blank" class="js-open-newsletter">Subscribe</a></div>
+            {% endif %}
+
             {% if settings.instagram %}
                 <div class="site-navigation-item"><a href="{{ settings.instagram }}" target="_blank">Instagram</a></div>
             {% endif %}
-            <div class="site-navigation-item"><a href="/cart" {% if template == 'cart' %}aria-current="page" class="active"{% endif %}>Cart</a></div>
+            
+            
         </div>
     </nav>
 
@@ -56,3 +64,7 @@
         Cart <span class="cart-drawer-button-count js-cart-count">{% unless cart.item_count == 0 %}{{ cart.item_count }}{% endunless %}</span>
     </button>
 </header>
+
+{% if settings.show_newsletter %}
+  {% render 'newsletter' %}
+{% endif %}

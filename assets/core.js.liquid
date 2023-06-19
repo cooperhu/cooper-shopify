@@ -7,10 +7,20 @@
 // Sitewide Init Functions
 initNavigation();
 initCartDrawer();
+initBase();
 
 /* ***********************
  * Sitewide Functions
  * *********************** */
+function initBase() {
+  // Show newsletter popup if cookie not set
+  var stateSelected = getCookie('popupShown');
+
+  if (stateSelected) { 
+  
+  }
+}
+
 function initNavigation() {
   // fade in desktop nav
   gsap.to('.site-navigation-item', {opacity: 1, y: 0, duration: 0.2, stagger: 0.1, ease: "power2.in"});
@@ -54,6 +64,28 @@ function initNavigation() {
       // markers: true,
     });
   }
+  // open newsletter
+  document.querySelector('.js-open-newsletter').addEventListener('click', function(e) {
+    e.preventDefault();
+    gsap.to('.newsletter-popup', 0.35, { autoAlpha: 1, opacity: 1 });
+    document.getElementById('newsletterEmail').focus();
+  });
+
+  document.querySelector('.sitewide-banner a').addEventListener('click', function(e) {    
+    let value = this.getAttribute('href');
+
+    if (value === '#subscribe') {
+      e.preventDefault();
+      gsap.to('.newsletter-popup', 0.35, { autoAlpha: 1, opacity: 1 });
+      document.getElementById('newsletterEmail').focus();
+    }
+  });
+
+  // close newsletter popup
+  document.querySelector('.js-close-popup').addEventListener('click', function(e) {
+    e.preventDefault();
+    gsap.to('.newsletter-popup', 0.35, { autoAlpha: 0, opacity: 0 });
+  });
 };
 
 function initCartDrawer() {
@@ -747,3 +779,26 @@ function debounce(func, wait, immediate) {
     if (callNow) func.apply(context, args);
   };
 };
+
+function setCookie(cname, cvalue) {
+  const d = new Date();
+  d.setTime(d.getTime() + (360*60*1000)); // expires in 6 hr
+  let expires = "expires="+ d.toUTCString();
+  document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+}
+
+function getCookie(cname) {
+  let name = cname + "=";
+  let decodedCookie = decodeURIComponent(document.cookie);
+  let ca = decodedCookie.split(';');
+  for(let i = 0; i <ca.length; i++) {
+    let c = ca[i];
+    while (c.charAt(0) == ' ') {
+      c = c.substring(1);
+    }
+    if (c.indexOf(name) == 0) {
+      return c.substring(name.length, c.length);
+    }
+  }
+  return "";
+}
